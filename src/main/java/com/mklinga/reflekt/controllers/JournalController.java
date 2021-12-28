@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,6 +28,19 @@ public class JournalController {
         });
 
         return ResponseEntity.ok(all);
+    }
+
+    @GetMapping("/{uuid}")
+    public ResponseEntity<JournalEntryDto> getJournalEntry(@PathVariable UUID uuid) {
+        Optional<JournalEntryDto> journalEntryDto = journalEntryService
+                .getJournalEntry(uuid)
+                .map(JournalEntryDto::of);
+
+        if (journalEntryDto.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(journalEntryDto.get());
     }
 
     @PostMapping("")

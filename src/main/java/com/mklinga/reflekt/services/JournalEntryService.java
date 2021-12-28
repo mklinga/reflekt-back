@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class JournalEntryService {
@@ -17,6 +19,10 @@ public class JournalEntryService {
 
     public Iterable<JournalEntry> getAllJournalEntries() {
         return journalEntryRepository.findAll();
+    }
+
+    public Optional<JournalEntry> getJournalEntry(UUID uuid) {
+        return journalEntryRepository.findById(uuid);
     }
 
     public JournalEntry addJournalEntry(JournalEntryDto journalEntryDto) {
