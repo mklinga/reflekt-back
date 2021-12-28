@@ -4,6 +4,7 @@ import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.services.JournalEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,15 +33,26 @@ public class JournalController {
 
     @GetMapping("/{uuid}")
     public ResponseEntity<JournalEntryDto> getJournalEntry(@PathVariable UUID uuid) {
-        Optional<JournalEntryDto> journalEntryDto = journalEntryService
+        return journalEntryService
                 .getJournalEntry(uuid)
-                .map(JournalEntryDto::of);
+                .map(JournalEntryDto::of)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        if (journalEntryDto.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{uuid}")
+    public ResponseEntity<JournalEntryDto> updateJournalEntry(@PathVariable UUID uuid, @RequestBody JournalEntryDto journalEntry) {
+        return journalEntryService
+                .updateJournalEntry(uuid, journalEntry)
+                .map(JournalEntryDto::of)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        return ResponseEntity.ok(journalEntryDto.get());
+    @DeleteMapping("{uuid}")
+    public ResponseEntity<Void> deleteJournalEntry(@PathVariable UUID uuid) {
+        HttpStatus status = journalEntryService.deleteJournalEntry(uuid) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).build();
     }
 
     @PostMapping("")

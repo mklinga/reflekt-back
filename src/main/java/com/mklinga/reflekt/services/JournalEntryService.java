@@ -33,4 +33,23 @@ public class JournalEntryService {
 
         return journalEntryRepository.save(journalEntry);
     }
+
+    public Optional<JournalEntry> updateJournalEntry(UUID uuid, JournalEntryDto journalEntryDto) {
+        return journalEntryRepository
+                .findById(uuid)
+                .map(entry -> {
+                    entry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+                    entry.setEntry(journalEntryDto.getEntry());
+                    return journalEntryRepository.save(entry);
+                });
+    }
+
+    public boolean deleteJournalEntry(UUID uuid) {
+        if (journalEntryRepository.findById(uuid).isEmpty()) {
+            return false;
+        }
+
+        journalEntryRepository.deleteById(uuid);
+        return true;
+    }
 }
