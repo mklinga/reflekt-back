@@ -1,0 +1,12 @@
+# Use postgres/example user/password credentials
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: reflekt
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: reflekt
+    ports:
+      - 5432:5432
