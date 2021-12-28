@@ -1,10 +1,10 @@
-package com.mklinga.reflekt.dtos.responses;
+package com.mklinga.reflekt.dtos;
 
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class HelloResponse {
+public class HelloDto {
     @NonNull
     private String hello;
 }
