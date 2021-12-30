@@ -25,6 +25,12 @@ public class JournalEntry {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private LocalDateTime updatedAt;
 
+    @Column(name = "mood", nullable = false, columnDefinition = "TEXT")
+    private String mood;
+
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
+    private String title;
+
     @Column(name = "entry", nullable = false, columnDefinition = "TEXT")
     private String entry;
 }

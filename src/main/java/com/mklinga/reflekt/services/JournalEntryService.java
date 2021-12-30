@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.services;
 
+import com.mklinga.reflekt.converters.JournalEntryConverter;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
@@ -35,10 +36,9 @@ public class JournalEntryService {
    */
 
   public JournalEntry addJournalEntry(JournalEntryDto journalEntryDto) {
-    JournalEntry journalEntry = new JournalEntry();
+    JournalEntry journalEntry = JournalEntryConverter.toEntry(journalEntryDto);
     journalEntry.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
     journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
-    journalEntry.setEntry(journalEntryDto.getEntry());
 
     return journalEntryRepository.save(journalEntry);
   }
