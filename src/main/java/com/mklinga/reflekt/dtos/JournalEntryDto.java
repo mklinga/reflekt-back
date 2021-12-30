@@ -1,16 +1,24 @@
 package com.mklinga.reflekt.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Data;
 
-import java.util.UUID;
-
+/**
+ * Data transfer object of the JournalEntry.
+ */
 @Data
 public class JournalEntryDto {
-    private UUID id;
+  private UUID id;
 
-    private String mood;
+  private String mood;
+  private String title;
+  private String entry;
 
-    private String title;
+  @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss'Z'")
+  private LocalDateTime createdAt;
 
-    private String entry;
+  @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss'Z'")
+  private LocalDateTime updatedAt;
 }
