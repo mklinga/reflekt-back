@@ -1,12 +1,12 @@
 package com.mklinga.reflekt.controllers;
 
-import com.mklinga.reflekt.converters.JournalEntryConverter;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,9 @@ public class JournalController {
   @Autowired
   private JournalEntryService journalEntryService;
 
+  @Autowired
+  private ModelMapper modelMapper;
+
   /**
    * Returns all JournalEntries as list.
    *
@@ -38,7 +41,7 @@ public class JournalController {
   public ResponseEntity<List<JournalEntryDto>> getJournalEntries() {
     List<JournalEntryDto> all = new ArrayList<>();
     journalEntryService.getAllJournalEntries().forEach(entry -> {
-      all.add(JournalEntryConverter.toDto(entry));
+      all.add(modelMapper.map(entry, JournalEntryDto.class));
     });
 
     return ResponseEntity.ok(all);
@@ -53,7 +56,9 @@ public class JournalController {
   @GetMapping("/{uuid}")
   public ResponseEntity<JournalEntryDto> getJournalEntry(@PathVariable UUID uuid) {
     return ResponseEntity.of(
-        journalEntryService.getJournalEntry(uuid).map(JournalEntryConverter::toDto)
+        journalEntryService
+            .getJournalEntry(uuid)
+            .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
     );
   }
 
@@ -69,7 +74,7 @@ public class JournalController {
       JournalEntryDto journalEntry) {
     return journalEntryService
         .updateJournalEntry(uuid, journalEntry)
-        .map(JournalEntryConverter::toDto)
+        .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
@@ -97,6 +102,6 @@ public class JournalController {
   public ResponseEntity<JournalEntryDto> createJournalEntry(
       @RequestBody JournalEntryDto newJournalEntry) {
     JournalEntry journalEntry = journalEntryService.addJournalEntry(newJournalEntry);
-    return ResponseEntity.ok(JournalEntryConverter.toDto(journalEntry));
+    return ResponseEntity.ok(modelMapper.map(journalEntry, JournalEntryDto.class));
   }
 }

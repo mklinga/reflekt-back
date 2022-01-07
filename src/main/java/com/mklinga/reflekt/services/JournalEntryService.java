@@ -1,6 +1,5 @@
 package com.mklinga.reflekt.services;
 
-import com.mklinga.reflekt.converters.JournalEntryConverter;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
@@ -8,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,9 @@ public class JournalEntryService {
 
   @Autowired
   private JournalEntryRepository journalEntryRepository;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   public Iterable<JournalEntry> getAllJournalEntries() {
     return journalEntryRepository.findAll();
@@ -36,7 +39,7 @@ public class JournalEntryService {
    */
 
   public JournalEntry addJournalEntry(JournalEntryDto journalEntryDto) {
-    JournalEntry journalEntry = JournalEntryConverter.toEntry(journalEntryDto);
+    JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
     journalEntry.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
     journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
 
