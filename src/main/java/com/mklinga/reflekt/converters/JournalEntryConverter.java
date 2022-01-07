@@ -19,6 +19,7 @@ public class JournalEntryConverter {
     journalEntryDto.setEntry(journalEntry.getEntry());
     journalEntryDto.setMood(journalEntry.getMood());
     journalEntryDto.setTitle(journalEntry.getTitle());
+    journalEntryDto.setEntryDate(journalEntry.getEntryDate());
     journalEntryDto.setCreatedAt(journalEntry.getCreatedAt());
     journalEntryDto.setUpdatedAt(journalEntry.getUpdatedAt());
     return journalEntryDto;
@@ -35,6 +36,7 @@ public class JournalEntryConverter {
     journalEntry.setEntry(journalEntryDto.getEntry());
     journalEntry.setMood(journalEntryDto.getMood());
     journalEntry.setTitle(journalEntryDto.getTitle());
+    journalEntry.setEntryDate(journalEntryDto.getEntryDate());
     journalEntry.setCreatedAt(journalEntryDto.getCreatedAt());
     journalEntry.setUpdatedAt(journalEntryDto.getUpdatedAt());
 

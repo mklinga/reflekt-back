@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.model;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,6 +19,9 @@ public class JournalEntry {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
+
+    @Column(name = "entry_date", nullable = false, columnDefinition = "DATE")
+    private LocalDate entryDate;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private LocalDateTime createdAt;

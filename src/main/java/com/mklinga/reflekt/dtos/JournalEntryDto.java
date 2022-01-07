@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Data;
@@ -15,6 +16,9 @@ public class JournalEntryDto {
   private String mood;
   private String title;
   private String entry;
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate entryDate;
 
   @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss'Z'")
   private LocalDateTime createdAt;
