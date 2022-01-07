@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.controllers;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
+import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.ArrayList;
@@ -33,15 +34,15 @@ public class JournalController {
   private ModelMapper modelMapper;
 
   /**
-   * Returns all JournalEntries as list.
+   * Returns JournalListItem for all the entries.
    *
-   * @return all JournalEntries
+   * @return list of JournalListItems
    */
   @GetMapping("")
-  public ResponseEntity<List<JournalEntryDto>> getJournalEntries() {
-    List<JournalEntryDto> all = new ArrayList<>();
+  public ResponseEntity<List<JournalListItemDto>> getJournalEntries() {
+    List<JournalListItemDto> all = new ArrayList<>();
     journalEntryService.getAllJournalEntries().forEach(entry -> {
-      all.add(modelMapper.map(entry, JournalEntryDto.class));
+      all.add(modelMapper.map(entry, JournalListItemDto.class));
     });
 
     return ResponseEntity.ok(all);
