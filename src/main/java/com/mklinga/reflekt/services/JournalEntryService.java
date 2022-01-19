@@ -54,13 +54,12 @@ public class JournalEntryService {
    * @return Updated item
    */
   public Optional<JournalEntry> updateJournalEntry(UUID uuid, JournalEntryDto journalEntryDto) {
-    return journalEntryRepository
-        .findById(uuid)
-        .map(entry -> {
-          entry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
-          entry.setEntry(journalEntryDto.getEntry());
-          return journalEntryRepository.save(entry);
-        });
+   return journalEntryRepository.findById(uuid).map(original -> {
+     JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
+     journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+
+     return journalEntryRepository.save(journalEntry);
+   });
   }
 
   /**

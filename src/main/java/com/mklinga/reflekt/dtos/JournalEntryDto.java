@@ -20,9 +20,9 @@ public class JournalEntryDto {
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 
-  @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss'Z'")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss[.SSS]'Z'")
   private LocalDateTime createdAt;
 
-  @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss'Z'")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss[.SSS]'Z'")
   private LocalDateTime updatedAt;
 }
