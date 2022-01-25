@@ -8,5 +8,7 @@ services:
       POSTGRES_USER: reflekt
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: reflekt
+    volumes:
+      - /home/m/reflekt-postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
