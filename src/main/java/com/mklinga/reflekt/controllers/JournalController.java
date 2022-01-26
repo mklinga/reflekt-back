@@ -3,6 +3,8 @@ package com.mklinga.reflekt.controllers;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.User;
+import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,9 +42,10 @@ public class JournalController {
    * @return list of JournalListItems
    */
   @GetMapping("")
-  public ResponseEntity<List<JournalListItemDto>> getJournalEntries() {
+  public ResponseEntity<List<JournalListItemDto>> getJournalEntries(@AuthenticationPrincipal
+                                                                        UserPrincipal user) {
     List<JournalListItemDto> all = new ArrayList<>();
-    journalEntryService.getAllJournalEntries().forEach(entry -> {
+    journalEntryService.getAllJournalEntries(user).forEach(entry -> {
       all.add(modelMapper.map(entry, JournalListItemDto.class));
     });
 
@@ -55,10 +59,12 @@ public class JournalController {
    * @return JournalEntry or 404 if not found
    */
   @GetMapping("/{uuid}")
-  public ResponseEntity<JournalEntryDto> getJournalEntry(@PathVariable UUID uuid) {
+  public ResponseEntity<JournalEntryDto> getJournalEntry(
+      @AuthenticationPrincipal UserPrincipal user,
+      @PathVariable UUID uuid) {
     return ResponseEntity.of(
         journalEntryService
-            .getJournalEntry(uuid)
+            .getJournalEntry(user, uuid)
             .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
     );
   }
@@ -71,10 +77,12 @@ public class JournalController {
    * @return The updated JournalEntry or 404 if not found
    */
   @PutMapping("/{uuid}")
-  public ResponseEntity<JournalEntryDto> updateJournalEntry(@PathVariable UUID uuid, @RequestBody
-      JournalEntryDto journalEntry) {
+  public ResponseEntity<JournalEntryDto> updateJournalEntry(
+      @AuthenticationPrincipal UserPrincipal user,
+      @PathVariable UUID uuid,
+      @RequestBody JournalEntryDto journalEntry) {
     return journalEntryService
-        .updateJournalEntry(uuid, journalEntry)
+        .updateJournalEntry(user, uuid, journalEntry)
         .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -87,9 +95,11 @@ public class JournalController {
    * @return 200 OK or 404 Not found
    */
   @DeleteMapping("{uuid}")
-  public ResponseEntity<Void> deleteJournalEntry(@PathVariable UUID uuid) {
+  public ResponseEntity<Void> deleteJournalEntry(
+      @AuthenticationPrincipal UserPrincipal user,
+      @PathVariable UUID uuid) {
     HttpStatus status =
-        journalEntryService.deleteJournalEntry(uuid) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        journalEntryService.deleteJournalEntry(user, uuid) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
     return ResponseEntity.status(status).build();
   }
 
@@ -101,8 +111,9 @@ public class JournalController {
    */
   @PostMapping("")
   public ResponseEntity<JournalEntryDto> createJournalEntry(
+      @AuthenticationPrincipal UserPrincipal user,
       @RequestBody JournalEntryDto newJournalEntry) {
-    JournalEntry journalEntry = journalEntryService.addJournalEntry(newJournalEntry);
+    JournalEntry journalEntry = journalEntryService.addJournalEntry(user, newJournalEntry);
     return ResponseEntity.ok(modelMapper.map(journalEntry, JournalEntryDto.class));
   }
 }

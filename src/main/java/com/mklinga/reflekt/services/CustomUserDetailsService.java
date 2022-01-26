@@ -1,7 +1,8 @@
 package com.mklinga.reflekt.services;
 
+import com.mklinga.reflekt.model.User;
+import com.mklinga.reflekt.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,17 +28,12 @@ public class CustomUserDetailsService implements UserDetailsService {
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    com.mklinga.reflekt.model.User dbUser = userService.findUserByUsername(username);
+    User dbUser = userService.findUserByUsername(username);
 
     if (dbUser == null) {
       throw new UsernameNotFoundException("Username not found");
     }
 
-    return User
-        .builder()
-        .username(dbUser.getUsername())
-        .password(dbUser.getPassword())
-        .authorities(dbUser.getRoles())
-        .build();
+    return new UserPrincipal(dbUser);
   }
 }

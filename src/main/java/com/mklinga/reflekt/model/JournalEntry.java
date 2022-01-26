@@ -37,4 +37,8 @@ public class JournalEntry {
 
     @Column(name = "entry", nullable = false, columnDefinition = "TEXT")
     private String entry;
+
+    @ManyToOne
+    @JoinColumn(name = "owner")
+    private User owner;
 }

@@ -2,6 +2,8 @@ package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.User;
+import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -23,12 +25,12 @@ public class JournalEntryService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public Iterable<JournalEntry> getAllJournalEntries() {
-    return journalEntryRepository.findAll();
+  public Iterable<JournalEntry> getAllJournalEntries(UserPrincipal user) {
+    return journalEntryRepository.findAllByOwner(user.getUser());
   }
 
-  public Optional<JournalEntry> getJournalEntry(UUID uuid) {
-    return journalEntryRepository.findById(uuid);
+  public Optional<JournalEntry> getJournalEntry(UserPrincipal user, UUID uuid) {
+    return journalEntryRepository.findByOwnerAndId(user.getUser(), uuid);
   }
 
   /**
@@ -38,10 +40,11 @@ public class JournalEntryService {
    * @return saved JournalEntry
    */
 
-  public JournalEntry addJournalEntry(JournalEntryDto journalEntryDto) {
+  public JournalEntry addJournalEntry(UserPrincipal user, JournalEntryDto journalEntryDto) {
     JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
     journalEntry.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
     journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+    journalEntry.setOwner(user.getUser());
 
     return journalEntryRepository.save(journalEntry);
   }
@@ -53,13 +56,17 @@ public class JournalEntryService {
    * @param journalEntryDto Updated item
    * @return Updated item
    */
-  public Optional<JournalEntry> updateJournalEntry(UUID uuid, JournalEntryDto journalEntryDto) {
-   return journalEntryRepository.findById(uuid).map(original -> {
-     JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
-     journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+  public Optional<JournalEntry> updateJournalEntry(UserPrincipal user, UUID uuid,
+                                                   JournalEntryDto journalEntryDto) {
+   return journalEntryRepository
+       .findByOwnerAndId(user.getUser(), uuid)
+       .map(original -> {
+         JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
+         journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+         journalEntry.setOwner(user.getUser());
 
-     return journalEntryRepository.save(journalEntry);
-   });
+         return journalEntryRepository.save(journalEntry);
+       });
   }
 
   /**
@@ -68,8 +75,8 @@ public class JournalEntryService {
    * @param uuid UUID to delete
    * @return true when successful, false when item not found
    */
-  public boolean deleteJournalEntry(UUID uuid) {
-    if (journalEntryRepository.findById(uuid).isEmpty()) {
+  public boolean deleteJournalEntry(UserPrincipal user, UUID uuid) {
+    if (journalEntryRepository.findByOwnerAndId(user.getUser(), uuid).isEmpty()) {
       return false;
     }
 
