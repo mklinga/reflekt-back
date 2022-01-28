@@ -2,7 +2,6 @@ package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.model.JournalEntry;
-import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class JournalEntryService {
 
   /**
    * Create new Journal entry into the database.
-
+   *
    * @param journalEntryDto new JournalEntry
    * @return saved JournalEntry
    */
@@ -53,8 +52,8 @@ public class JournalEntryService {
 
   /**
    * Update existing JournalEntry in the database.
-
-   * @param uuid UUID of the existing item
+   *
+   * @param uuid            UUID of the existing item
    * @param journalEntryDto Updated item
    * @return Updated item
    */
@@ -73,7 +72,7 @@ public class JournalEntryService {
 
   /**
    * Delete existing JournalEntry by UUID.
-
+   *
    * @param uuid UUID to delete
    * @return true when successful, false when item not found
    */

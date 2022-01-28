@@ -1,25 +1,18 @@
 package com.mklinga.reflekt.configuration;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+/**
+ * Provider custom handling of the login success flow. Instead of redirecting the user, we simply
+ * return 200 OK (the login is called through an AJAX call from the frontend, so redirect doesn't
+ * make sense).
+ */
 @Component
-public class LoginHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
-
-  @Override
-  public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                      AuthenticationException exception) {
-
-      response.setStatus(401);
-  }
-
+public class LoginSuccessHandler implements AuthenticationSuccessHandler {
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                       Authentication authentication) {

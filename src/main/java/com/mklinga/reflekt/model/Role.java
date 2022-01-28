@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * Provides the entity model for the authentication roles in the application (USER/ADMIN).
+ */
 @Entity
 @Table(name = "roles")
 @Setter

@@ -3,7 +3,6 @@ package com.mklinga.reflekt.controllers;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.model.JournalEntry;
-import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class JournalController {
   /**
    * Updates an existing JournalEntry.
    *
-   * @param uuid The id of the JournalEntry
+   * @param uuid         The id of the JournalEntry
    * @param journalEntry The updated JournalEntry
    * @return The updated JournalEntry or 404 if not found
    */

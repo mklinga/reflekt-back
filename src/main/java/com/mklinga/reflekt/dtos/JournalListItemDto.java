@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
 
+/**
+ * Provides the data transfer object for the items in the JournalEntries list
+ * (this Dto should always be a subset of the JournalEntryDto).
+ */
 @Data
 public class JournalListItemDto {
   private UUID id;
