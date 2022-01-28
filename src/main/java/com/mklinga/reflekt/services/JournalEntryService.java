@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,7 +27,8 @@ public class JournalEntryService {
   private ModelMapper modelMapper;
 
   public Iterable<JournalEntry> getAllJournalEntries(UserPrincipal user) {
-    return journalEntryRepository.findAllByOwner(user.getUser());
+    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
+    return journalEntryRepository.findAllByOwner(user.getUser(), sort);
   }
 
   public Optional<JournalEntry> getJournalEntry(UserPrincipal user, UUID uuid) {
@@ -58,15 +60,15 @@ public class JournalEntryService {
    */
   public Optional<JournalEntry> updateJournalEntry(UserPrincipal user, UUID uuid,
                                                    JournalEntryDto journalEntryDto) {
-   return journalEntryRepository
-       .findByOwnerAndId(user.getUser(), uuid)
-       .map(original -> {
-         JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
-         journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
-         journalEntry.setOwner(user.getUser());
+    return journalEntryRepository
+        .findByOwnerAndId(user.getUser(), uuid)
+        .map(original -> {
+          JournalEntry journalEntry = modelMapper.map(journalEntryDto, JournalEntry.class);
+          journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+          journalEntry.setOwner(user.getUser());
 
-         return journalEntryRepository.save(journalEntry);
-       });
+          return journalEntryRepository.save(journalEntry);
+        });
   }
 
   /**
