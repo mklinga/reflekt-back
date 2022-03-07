@@ -2,7 +2,7 @@ package com.mklinga.reflekt.controllers;
 
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.services.com.mklinga.reflekt.services.modules.ModuleService;
+import com.mklinga.reflekt.services.modules.ModuleService;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

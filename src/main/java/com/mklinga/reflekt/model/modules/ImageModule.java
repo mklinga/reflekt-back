@@ -1,4 +1,4 @@
-package com.mklinga.reflekt.model.com.mklinga.reflekt.model.modules;
+package com.mklinga.reflekt.model.modules;
 
 import com.mklinga.reflekt.model.JournalEntry;
 import java.util.UUID;

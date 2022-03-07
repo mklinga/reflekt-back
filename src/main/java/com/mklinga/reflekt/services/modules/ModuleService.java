@@ -1,10 +1,11 @@
-package com.mklinga.reflekt.services.com.mklinga.reflekt.services.modules;
+package com.mklinga.reflekt.services.modules;
 
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.com.mklinga.reflekt.model.modules.ImageModule;
+import com.mklinga.reflekt.model.modules.ImageModule;
 import com.mklinga.reflekt.services.JournalEntryService;
+import com.mklinga.reflekt.services.modules.ImageModuleService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

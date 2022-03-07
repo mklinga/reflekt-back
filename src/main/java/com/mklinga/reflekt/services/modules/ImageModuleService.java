@@ -1,8 +1,8 @@
-package com.mklinga.reflekt.services.com.mklinga.reflekt.services.modules;
+package com.mklinga.reflekt.services.modules;
 
 import com.mklinga.reflekt.model.JournalEntry;
-import com.mklinga.reflekt.model.com.mklinga.reflekt.model.modules.ImageModule;
-import com.mklinga.reflekt.repositories.com.mklinga.reflekt.repositories.modules.ImageModuleRepository;
+import com.mklinga.reflekt.model.modules.ImageModule;
+import com.mklinga.reflekt.repositories.modules.ImageModuleRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
