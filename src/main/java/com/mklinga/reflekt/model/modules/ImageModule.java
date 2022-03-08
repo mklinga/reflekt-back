@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -29,8 +30,10 @@ public class ImageModule {
 
   @ManyToOne
   @JoinColumn (name = "journal_entry", nullable = false)
+  @Setter
   private JournalEntry journalEntry;
 
   @Column(name = "image_name", nullable = false)
+  @Setter
   private String imageName;
 }

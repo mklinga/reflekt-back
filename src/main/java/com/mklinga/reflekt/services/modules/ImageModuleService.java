@@ -23,4 +23,11 @@ public class ImageModuleService {
   public List<ImageModule> getAllImages(JournalEntry journalEntry) {
     return imageModuleRepository.findByJournalEntry(journalEntry);
   }
+
+  public ImageModule saveNewImage(JournalEntry journalEntry, String imageName) {
+    ImageModule image = new ImageModule();
+    image.setJournalEntry(journalEntry);
+    image.setImageName(imageName);
+    return imageModuleRepository.save(image);
+  }
 }

@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.dtos;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.Data;
 
 /**
@@ -8,5 +9,5 @@ import lombok.Data;
  */
 @Data
 public class ModuleDataDto {
-  private List<String> images;
+  private List<UUID> images;
 }
