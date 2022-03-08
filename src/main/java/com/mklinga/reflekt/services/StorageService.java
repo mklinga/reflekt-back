@@ -24,10 +24,10 @@ public class StorageService {
   @Value("${modules.image-directory}")
   private String imageDirectory;
 
-  /* Only PNG files are supported for now
+  /* Only JPEG files are supported for now
      TODO: Take hold of the mime type when uploading files, store in db, use everywhere.
    */
-  private final String allowedFileExtension = ".png";
+  private final String allowedFileExtension = ".jpg";
 
   /**
    * Get user-uploaded image from the disk.
@@ -48,13 +48,13 @@ public class StorageService {
     }
 
     if (!file.getOriginalFilename().toLowerCase().endsWith(allowedFileExtension)) {
-      throw new StorageException("Only PNG files are supported for now...");
+      throw new StorageException("Only JPEG files are supported for now...");
     }
 
     Path destination = Paths.get(
         imageDirectory,
         Integer.toString(user.getId()),
-        imageId.toString() + ".png"
+        imageId.toString() + ".jpg"
     );
 
     try {

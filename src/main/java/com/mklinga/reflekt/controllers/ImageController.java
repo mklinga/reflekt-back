@@ -54,7 +54,8 @@ public class ImageController {
     Resource image = storageService.getResource(userPrincipal.getUser(), imageId);
 
     if (image.exists()) {
-      return ResponseEntity.ok().header(CONTENT_TYPE, "image/png").body(image);
+      /* TODO: Allow other mimetypes as well... */
+      return ResponseEntity.ok().header(CONTENT_TYPE, "image/jpeg").body(image);
     }
 
     return ResponseEntity.notFound().build();
@@ -65,6 +66,11 @@ public class ImageController {
                                           @RequestParam("file") MultipartFile file,
                                           @RequestParam("journalEntry") UUID entryId) {
 
+    /* TODO
+      * error handling:
+      * remove image from database if saving it fails
+      * send a message to the client if something fails
+     */
     return journalEntryService
         .getJournalEntry(userPrincipal, entryId)
         .map(journalEntry -> {
@@ -73,6 +79,5 @@ public class ImageController {
           return ResponseEntity.ok().body("All good for " + image.getId().toString());
         })
         .orElse(ResponseEntity.notFound().build());
-
   }
 }
