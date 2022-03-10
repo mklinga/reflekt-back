@@ -1,17 +1,24 @@
 package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
+import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Service to manipulate journal entries.
@@ -25,9 +32,27 @@ public class JournalEntryService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public Iterable<JournalEntry> getAllJournalEntries(UserPrincipal user) {
+  @PersistenceContext
+  EntityManager entityManager;
+
+  public List<JournalEntry> getAllJournalEntries(UserPrincipal user) {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
     return journalEntryRepository.findAllByOwner(user.getUser(), sort);
+  }
+
+  @Transactional(readOnly = true)
+  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user) {
+    List<JournalEntry> entries = getAllJournalEntries(user);
+    List<UUID> resultList = entityManager
+        .createQuery("SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = ?1")
+        .setParameter(1, user.getUser())
+        .getResultList();
+
+    return entries.stream().map(entry -> {
+      JournalListItemDto listItem = modelMapper.map(entry, JournalListItemDto.class);
+      listItem.setHasImages(resultList.contains(listItem.getId()));
+      return listItem;
+    }).collect(Collectors.toList());
   }
 
   public Optional<JournalEntry> getJournalEntry(UserPrincipal user, UUID uuid) {

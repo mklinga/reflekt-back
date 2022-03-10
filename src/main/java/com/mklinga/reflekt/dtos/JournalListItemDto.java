@@ -16,6 +16,8 @@ public class JournalListItemDto {
   private String mood;
   private String title;
 
+  private boolean hasImages;
+
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 }

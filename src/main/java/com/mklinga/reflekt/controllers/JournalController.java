@@ -43,10 +43,10 @@ public class JournalController {
   @GetMapping("")
   public ResponseEntity<List<JournalListItemDto>> getJournalEntries(@AuthenticationPrincipal
                                                                         UserPrincipal user) {
-    List<JournalListItemDto> all = new ArrayList<>();
-    journalEntryService.getAllJournalEntries(user).forEach(entry -> {
-      all.add(modelMapper.map(entry, JournalListItemDto.class));
-    });
+    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user);
+//    journalEntryService.getAllJournalEntries(user).forEach(entry -> {
+//      all.add(modelMapper.map(entry, JournalListItemDto.class));
+//    });
 
     return ResponseEntity.ok(all);
   }
