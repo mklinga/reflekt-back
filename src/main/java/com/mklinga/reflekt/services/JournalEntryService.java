@@ -3,6 +3,7 @@ package com.mklinga.reflekt.services;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
@@ -44,7 +45,8 @@ public class JournalEntryService {
   public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user) {
     List<JournalEntry> entries = getAllJournalEntries(user);
     List<UUID> resultList = entityManager
-        .createQuery("SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = ?1")
+        .createQuery(
+            "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = ?1")
         .setParameter(1, user.getUser())
         .getResultList();
 
@@ -57,6 +59,38 @@ public class JournalEntryService {
 
   public Optional<JournalEntry> getJournalEntry(UserPrincipal user, UUID uuid) {
     return journalEntryRepository.findByOwnerAndId(user.getUser(), uuid);
+  }
+
+  public NavigationData getEntryNavigationData(UserPrincipal user, UUID entryId) {
+    Object[] result = (Object[]) entityManager.createNativeQuery(
+            new StringBuilder().append("WITH e AS (")
+                .append(" SELECT id,")
+                .append(" lag(id) OVER (ORDER BY entry_date) AS previous,")
+                .append(" lead(id) OVER (ORDER BY entry_date) AS next")
+                .append(" FROM entries WHERE owner = ?1 ORDER BY entry_date ASC")
+                .append(" )")
+                .append(" SELECT cast(id as varchar),")
+                .append(" cast(previous as varchar),")
+                .append(" cast(next as varchar)")
+                .append(" FROM e WHERE e.id = ?2").toString())
+        .setParameter(1, user.getUser().getId())
+        .setParameter(2, entryId)
+        .getSingleResult();
+
+    NavigationData navigationData = new NavigationData();
+    if (result == null || result.length < 3) {
+      return navigationData;
+    }
+
+    if (result[1] != null) {
+      navigationData.setPrevious(UUID.fromString((String)result[1]));
+    }
+
+    if (result[2] != null) {
+      navigationData.setNext(UUID.fromString((String)result[2]));
+    }
+
+    return navigationData;
   }
 
   /**

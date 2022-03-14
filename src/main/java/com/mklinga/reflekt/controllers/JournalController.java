@@ -2,11 +2,14 @@ package com.mklinga.reflekt.controllers;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
+import com.mklinga.reflekt.dtos.Navigable;
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +47,6 @@ public class JournalController {
   public ResponseEntity<List<JournalListItemDto>> getJournalEntries(@AuthenticationPrincipal
                                                                         UserPrincipal user) {
     List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user);
-//    journalEntryService.getAllJournalEntries(user).forEach(entry -> {
-//      all.add(modelMapper.map(entry, JournalListItemDto.class));
-//    });
 
     return ResponseEntity.ok(all);
   }
@@ -58,14 +58,19 @@ public class JournalController {
    * @return JournalEntry or 404 if not found
    */
   @GetMapping("/{uuid}")
-  public ResponseEntity<JournalEntryDto> getJournalEntry(
+  public ResponseEntity<Navigable<JournalEntryDto>> getJournalEntry(
       @AuthenticationPrincipal UserPrincipal user,
       @PathVariable UUID uuid) {
-    return ResponseEntity.of(
-        journalEntryService
+    Optional<JournalEntryDto> data = journalEntryService
             .getJournalEntry(user, uuid)
-            .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
-    );
+            .map(entry -> modelMapper.map(entry, JournalEntryDto.class));
+
+    return data.map(journalEntryDto -> {
+      NavigationData navigationData = journalEntryService
+          .getEntryNavigationData(user, journalEntryDto.getId());
+
+      return ResponseEntity.ok(new Navigable<>(journalEntryDto, navigationData));
+    }).orElse(ResponseEntity.notFound().build());
   }
 
   /**
