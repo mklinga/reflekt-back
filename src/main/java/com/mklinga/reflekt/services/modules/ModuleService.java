@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.services.modules;
 
+import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
@@ -41,10 +42,15 @@ public class ModuleService {
 
     return entry.map(e -> {
       ModuleDataDto moduleData = new ModuleDataDto();
-      List<UUID> images = imageModuleService
+      List<ImageModuleDataDto> images = imageModuleService
           .getAllImages(entry.get())
           .stream()
-          .map(ImageModule::getId)
+          .map(image -> {
+            ImageModuleDataDto imageModuleDataDto = new ImageModuleDataDto();
+            imageModuleDataDto.setId(image.getId());
+            imageModuleDataDto.setName(image.getImageName());
+            return imageModuleDataDto;
+          })
           .collect(Collectors.toList());
 
       moduleData.setImages(images);
