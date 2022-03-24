@@ -29,6 +29,11 @@ public class StorageService {
    */
   private final String allowedFileExtension = ".jpg";
 
+  private Path getImagePath(User user, UUID imageId) {
+    String fileName = imageId.toString() + allowedFileExtension;
+    return Paths.get(imageDirectory, Integer.toString(user.getId()), fileName);
+  }
+
   /**
    * Get user-uploaded image from the disk.
    *
@@ -37,9 +42,21 @@ public class StorageService {
    * @return Resource from the file system
    */
   public Resource getResource(User user, UUID imageId) {
-    String fileName = imageId.toString() + allowedFileExtension;
-    Path path = Paths.get(imageDirectory, Integer.toString(user.getId()), fileName);
-    return new FileSystemResource(path);
+    return new FileSystemResource(getImagePath(user, imageId));
+  }
+
+  public boolean doesResourceExist(User user, UUID imageId) {
+    return getResource(user, imageId).exists();
+  }
+
+  public boolean removeResource(User user, UUID imageId) {
+    Path path = getImagePath(user, imageId);
+    try {
+      return Files.deleteIfExists(path);
+    } catch (IOException exception) {
+      // TODO: LOG ERROR
+      return false;
+    }
   }
 
   public UUID saveResource(User user, MultipartFile file, UUID imageId) {

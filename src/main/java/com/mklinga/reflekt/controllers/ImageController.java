@@ -2,6 +2,7 @@ package com.mklinga.reflekt.controllers;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
+import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.model.modules.ImageModule;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,11 +62,30 @@ public class ImageController {
 
     return ResponseEntity.notFound().build();
   }
+
+  @DeleteMapping("/{imageId}")
+  public ResponseEntity<Void> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                          @PathVariable final UUID imageId) {
+    /*
+
+      The storageService method looks files only from the user-specific directory, so we can be sure
+      that if the resource has been deleted from the disk, it is also allowed to be deleted from the
+      database by the active User.
+
+     */
+    boolean resourceRemoved = storageService.removeResource(userPrincipal.getUser(), imageId);
+    if (!resourceRemoved) {
+      return ResponseEntity.notFound().build();
+    }
+
+    imageModuleService.deleteImage(imageId);
+    return ResponseEntity.ok().build();
+  }
   
   @PostMapping("")
-  public ResponseEntity<String> postImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                          @RequestParam("file") MultipartFile file,
-                                          @RequestParam("journalEntry") UUID entryId) {
+  public ResponseEntity<ImageModuleDataDto> postImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                      @RequestParam("file") MultipartFile file,
+                                                      @RequestParam("journalEntry") UUID entryId) {
 
     /* TODO
       * error handling:
@@ -76,7 +97,10 @@ public class ImageController {
         .map(journalEntry -> {
           ImageModule image = imageModuleService.saveNewImage(journalEntry, file.getOriginalFilename());
           storageService.saveResource(userPrincipal.getUser(), file, image.getId());
-          return ResponseEntity.ok().body("All good for " + image.getId().toString());
+          ImageModuleDataDto imageModuleDataDto = new ImageModuleDataDto();
+          imageModuleDataDto.setName(image.getImageName());
+          imageModuleDataDto.setId(image.getId());
+          return ResponseEntity.ok().body(imageModuleDataDto);
         })
         .orElse(ResponseEntity.notFound().build());
   }
