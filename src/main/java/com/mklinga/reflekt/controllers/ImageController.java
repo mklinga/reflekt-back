@@ -63,23 +63,23 @@ public class ImageController {
     return ResponseEntity.notFound().build();
   }
 
+  /**
+   * Remove an image from the User. This will set the "deleted" flag in the database and move the
+   * existing image into the "removed" directory in the file system.
+   *
+   * @param userPrincipal Logged-in user
+   * @param imageId ID of the image
+   * @return Deleted image or not found
+   */
   @DeleteMapping("/{imageId}")
-  public ResponseEntity<Void> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
+  public ResponseEntity<ImageModule> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                           @PathVariable final UUID imageId) {
-    /*
-
-      The storageService method looks files only from the user-specific directory, so we can be sure
-      that if the resource has been deleted from the disk, it is also allowed to be deleted from the
-      database by the active User.
-
-     */
     boolean resourceRemoved = storageService.removeResource(userPrincipal.getUser(), imageId);
     if (!resourceRemoved) {
       return ResponseEntity.notFound().build();
     }
 
-    imageModuleService.deleteImage(imageId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.of(imageModuleService.deleteImage(userPrincipal.getUser(), imageId));
   }
   
   @PostMapping("")
@@ -92,16 +92,14 @@ public class ImageController {
       * remove image from database if saving it fails
       * send a message to the client if something fails
      */
-    return journalEntryService
-        .getJournalEntry(userPrincipal, entryId)
-        .map(journalEntry -> {
-          ImageModule image = imageModuleService.saveNewImage(journalEntry, file.getOriginalFilename());
-          storageService.saveResource(userPrincipal.getUser(), file, image.getId());
-          ImageModuleDataDto imageModuleDataDto = new ImageModuleDataDto();
-          imageModuleDataDto.setName(image.getImageName());
-          imageModuleDataDto.setId(image.getId());
-          return ResponseEntity.ok().body(imageModuleDataDto);
-        })
-        .orElse(ResponseEntity.notFound().build());
+    return ResponseEntity.of(
+        journalEntryService
+            .getJournalEntry(userPrincipal, entryId)
+            .map(journalEntry -> {
+              ImageModule image = imageModuleService
+                  .saveNewImage(userPrincipal.getUser(), journalEntry, file.getOriginalFilename());
+              storageService.saveResource(userPrincipal.getUser(), file, image.getId());
+              return ImageModuleDataDto.of(image);
+        }));
   }
 }

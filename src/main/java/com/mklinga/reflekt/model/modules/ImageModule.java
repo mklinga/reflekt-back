@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.model.modules;
 
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.User;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,11 +30,24 @@ public class ImageModule {
   private UUID id;
 
   @ManyToOne
-  @JoinColumn (name = "journal_entry", nullable = false)
+  @JoinColumn(name = "journal_entry", nullable = false)
   @Setter
   private JournalEntry journalEntry;
 
   @Column(name = "image_name", nullable = false)
   @Setter
   private String imageName;
+
+  @ManyToOne
+  @Setter
+  @JoinColumn(name = "owner", nullable = false)
+  private User owner;
+
+  @Column(name = "mime_type")
+  @Setter
+  private String mimeType;
+
+  @Column(name = "deleted")
+  @Setter
+  private Boolean deleted;
 }

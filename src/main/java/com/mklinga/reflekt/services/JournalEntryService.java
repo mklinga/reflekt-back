@@ -46,8 +46,8 @@ public class JournalEntryService {
     List<JournalEntry> entries = getAllJournalEntries(user);
     List<UUID> resultList = entityManager
         .createQuery(
-            "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = ?1")
-        .setParameter(1, user.getUser())
+            "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = :owner AND m.deleted = false")
+        .setParameter("owner", user.getUser())
         .getResultList();
 
     return entries.stream().map(entry -> {
@@ -67,14 +67,14 @@ public class JournalEntryService {
                 .append(" SELECT id,")
                 .append(" lag(id) OVER (ORDER BY entry_date) AS previous,")
                 .append(" lead(id) OVER (ORDER BY entry_date) AS next")
-                .append(" FROM entries WHERE owner = ?1 ORDER BY entry_date ASC")
+                .append(" FROM entries WHERE owner = :owner ORDER BY entry_date ASC")
                 .append(" )")
                 .append(" SELECT cast(id as varchar),")
                 .append(" cast(previous as varchar),")
                 .append(" cast(next as varchar)")
-                .append(" FROM e WHERE e.id = ?2").toString())
-        .setParameter(1, user.getUser().getId())
-        .setParameter(2, entryId)
+                .append(" FROM e WHERE e.id = :id").toString())
+        .setParameter("owner", user.getUser().getId())
+        .setParameter("id", entryId)
         .getSingleResult();
 
     NavigationData navigationData = new NavigationData();

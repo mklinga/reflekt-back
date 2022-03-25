@@ -24,6 +24,9 @@ public class StorageService {
   @Value("${modules.image-directory}")
   private String imageDirectory;
 
+  @Value("${modules.deleted-image-directory-name}")
+  private String deletedImageDirectoryName;
+
   /* Only JPEG files are supported for now
      TODO: Take hold of the mime type when uploading files, store in db, use everywhere.
    */
@@ -32,6 +35,13 @@ public class StorageService {
   private Path getImagePath(User user, UUID imageId) {
     String fileName = imageId.toString() + allowedFileExtension;
     return Paths.get(imageDirectory, Integer.toString(user.getId()), fileName);
+  }
+
+  private Path getDeletedImagePath(User user, UUID imageId) {
+    String fileName = imageId.toString() + allowedFileExtension;
+    return Paths.get(
+        imageDirectory, Integer.toString(user.getId()), deletedImageDirectoryName, fileName
+    );
   }
 
   /**
@@ -45,14 +55,24 @@ public class StorageService {
     return new FileSystemResource(getImagePath(user, imageId));
   }
 
-  public boolean doesResourceExist(User user, UUID imageId) {
-    return getResource(user, imageId).exists();
-  }
-
+  /**
+   * Remove resource - functionality does not physically delete the file, but instead moves it into
+   * the deleted - directory for the specific user. This is complemented by the db operation where
+   * the "deleted" flag of the image will be set to TRUE.
+   *
+   * @param user Logged in user
+   * @param imageId id of the image that is being deleted
+   * @return boolean based on the success of the move operation
+   */
   public boolean removeResource(User user, UUID imageId) {
-    Path path = getImagePath(user, imageId);
     try {
-      return Files.deleteIfExists(path);
+      Path deletedImagesDirectory = Paths.get(
+          imageDirectory, Integer.toString(user.getId()), deletedImageDirectoryName
+      );
+
+      Files.createDirectories(deletedImagesDirectory);
+      Files.move(getImagePath(user, imageId), getDeletedImagePath(user, imageId));
+      return true;
     } catch (IOException exception) {
       // TODO: LOG ERROR
       return false;

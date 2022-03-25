@@ -4,7 +4,6 @@ import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.ImageModule;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
 import java.util.Optional;
@@ -43,14 +42,9 @@ public class ModuleService {
     return entry.map(e -> {
       ModuleDataDto moduleData = new ModuleDataDto();
       List<ImageModuleDataDto> images = imageModuleService
-          .getAllImages(entry.get())
+          .getAllImagesForEntry(userPrincipal.getUser(), entry.get())
           .stream()
-          .map(image -> {
-            ImageModuleDataDto imageModuleDataDto = new ImageModuleDataDto();
-            imageModuleDataDto.setId(image.getId());
-            imageModuleDataDto.setName(image.getImageName());
-            return imageModuleDataDto;
-          })
+          .map(ImageModuleDataDto::of)
           .collect(Collectors.toList());
 
       moduleData.setImages(images);
