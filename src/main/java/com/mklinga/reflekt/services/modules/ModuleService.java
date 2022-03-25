@@ -2,7 +2,6 @@ package com.mklinga.reflekt.services.modules;
 
 import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
-import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
@@ -33,22 +32,21 @@ public class ModuleService {
    * (or is not owned by the authenticated user), the method will return Optional.empty().
    *
    * @param userPrincipal Authenticated user
-   * @param entryId UUID of the journal entry
+   * @param entryId       UUID of the journal entry
    * @return Data from all the modules related to the JournalEntry
    */
   public Optional<ModuleDataDto> getModuleData(UserPrincipal userPrincipal, UUID entryId) {
-    Optional<JournalEntry> entry = journalEntryService.getJournalEntry(userPrincipal, entryId);
+    return journalEntryService
+        .getJournalEntry(userPrincipal, entryId).map(entry -> {
+          List<ImageModuleDataDto> images = imageModuleService
+              .getAllImagesForEntry(userPrincipal.getUser(), entry)
+              .stream()
+              .map(ImageModuleDataDto::of)
+              .collect(Collectors.toList());
 
-    return entry.map(e -> {
-      ModuleDataDto moduleData = new ModuleDataDto();
-      List<ImageModuleDataDto> images = imageModuleService
-          .getAllImagesForEntry(userPrincipal.getUser(), entry.get())
-          .stream()
-          .map(ImageModuleDataDto::of)
-          .collect(Collectors.toList());
-
-      moduleData.setImages(images);
-      return moduleData;
-    });
+          ModuleDataDto moduleData = new ModuleDataDto();
+          moduleData.setImages(images);
+          return moduleData;
+        });
   }
 }
