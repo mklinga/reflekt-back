@@ -2,12 +2,16 @@ package com.mklinga.reflekt.services.modules;
 
 import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
+import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
+import com.mklinga.reflekt.model.modules.ImageModule;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +24,23 @@ public class ModuleService {
   private final JournalEntryService journalEntryService;
   private final ImageModuleService imageModuleService;
 
+  private final ModelMapper modelMapper;
+
   @Autowired
   public ModuleService(JournalEntryService journalEntryService,
-                       ImageModuleService imageModuleService) {
+                       ImageModuleService imageModuleService,
+                       ModelMapper modelMapper) {
     this.journalEntryService = journalEntryService;
     this.imageModuleService = imageModuleService;
+    this.modelMapper = modelMapper;
+  }
+
+  private List<ImageModuleDataDto> getImageModuleData(User user, JournalEntry entry) {
+    return imageModuleService
+        .getAllImagesForEntry(user, entry)
+        .stream()
+        .map(image -> modelMapper.map(image, ImageModuleDataDto.class))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -38,14 +54,8 @@ public class ModuleService {
   public Optional<ModuleDataDto> getModuleData(UserPrincipal userPrincipal, UUID entryId) {
     return journalEntryService
         .getJournalEntry(userPrincipal, entryId).map(entry -> {
-          List<ImageModuleDataDto> images = imageModuleService
-              .getAllImagesForEntry(userPrincipal.getUser(), entry)
-              .stream()
-              .map(ImageModuleDataDto::of)
-              .collect(Collectors.toList());
-
           ModuleDataDto moduleData = new ModuleDataDto();
-          moduleData.setImages(images);
+          moduleData.setImages(getImageModuleData(userPrincipal.getUser(), entry));
           return moduleData;
         });
   }

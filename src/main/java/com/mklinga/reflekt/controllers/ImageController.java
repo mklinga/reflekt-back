@@ -10,10 +10,12 @@ import com.mklinga.reflekt.services.JournalEntryService;
 import com.mklinga.reflekt.services.StorageService;
 import com.mklinga.reflekt.services.modules.ImageModuleService;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +34,15 @@ public class ImageController {
   private final StorageService storageService;
   private final ImageModuleService imageModuleService;
   private final JournalEntryService journalEntryService;
+  private final ModelMapper modelMapper;
 
   @Autowired
   public ImageController(StorageService storageService, ImageModuleService imageModuleService,
-                         JournalEntryService journalEntryService) {
+                         JournalEntryService journalEntryService, ModelMapper modelMapper) {
     this.storageService = storageService;
     this.imageModuleService = imageModuleService;
     this.journalEntryService = journalEntryService;
+    this.modelMapper = modelMapper;
   }
 
   /**
@@ -99,7 +103,7 @@ public class ImageController {
               ImageModule image = imageModuleService
                   .saveNewImage(userPrincipal.getUser(), journalEntry, file.getOriginalFilename());
               storageService.saveResource(userPrincipal.getUser(), file, image.getId());
-              return ImageModuleDataDto.of(image);
+              return modelMapper.map(image, ImageModuleDataDto.class);
         }));
   }
 }
