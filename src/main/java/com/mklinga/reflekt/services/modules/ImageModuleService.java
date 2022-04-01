@@ -28,6 +28,13 @@ public class ImageModuleService {
         .findByJournalEntryAndOwnerAndDeleted(journalEntry, user, false);
   }
 
+  /**
+   * Soft-delete the image in the repository (set deleted - flag to true).
+   *
+   * @param user logged-in user
+   * @param imageId UUID of the image
+   * @return deleted image if found
+   */
   public Optional<ImageModule> deleteImage(User user, UUID imageId) {
     return imageModuleRepository
         .findByOwnerAndId(user, imageId)
@@ -38,6 +45,14 @@ public class ImageModuleService {
         .orElse(Optional.empty());
   }
 
+  /**
+   * Save new image information into the imageModuleRepository.
+   *
+   * @param user Logged-in user
+   * @param journalEntry Journal entry in which the image is related to
+   * @param imageName Original filename of the image
+   * @return newly saved image
+   */
   public ImageModule saveNewImage(User user, JournalEntry journalEntry, String imageName) {
     ImageModule image = new ImageModule();
     image.setJournalEntry(journalEntry);
