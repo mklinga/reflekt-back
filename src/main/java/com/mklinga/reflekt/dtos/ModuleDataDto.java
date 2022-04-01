@@ -9,4 +9,5 @@ import lombok.Data;
 @Data
 public class ModuleDataDto {
   private List<ImageModuleDataDto> images;
+  private List<TagModuleDataDto> tags;
 }

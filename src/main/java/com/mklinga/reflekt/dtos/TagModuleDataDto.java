@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ImageModuleDataDto {
+public class TagModuleDataDto {
   private UUID id;
   private String name;
 }

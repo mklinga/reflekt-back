@@ -2,6 +2,7 @@ package com.mklinga.reflekt.services.modules;
 
 import com.mklinga.reflekt.dtos.ImageModuleDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
+import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
@@ -43,6 +44,13 @@ public class ModuleService {
         .collect(Collectors.toList());
   }
 
+  private List<TagModuleDataDto> getTagModuleData(User user, JournalEntry entry) {
+    TagModuleDataDto test = new TagModuleDataDto();
+    test.setId(UUID.randomUUID());
+    test.setName("TEST TAG");
+    return List.of(test);
+  }
+
   /**
    * Fetches data from all the modules related to the JournalEntry. If the entry cannot be found
    * (or is not owned by the authenticated user), the method will return Optional.empty().
@@ -56,6 +64,7 @@ public class ModuleService {
         .getJournalEntry(userPrincipal, entryId).map(entry -> {
           ModuleDataDto moduleData = new ModuleDataDto();
           moduleData.setImages(getImageModuleData(userPrincipal.getUser(), entry));
+          moduleData.setTags(getTagModuleData(userPrincipal.getUser(), entry));
           return moduleData;
         });
   }

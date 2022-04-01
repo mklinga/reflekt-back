@@ -17,8 +17,7 @@ public class ApplicationConfiguration {
     ModelMapper modelMapper = new ModelMapper();
 
     /* Add custom ImageModule -> ImageModuleDataDto field conversion */
-    modelMapper
-        .typeMap(ImageModule.class, ImageModuleDataDto.class)
+    modelMapper.typeMap(ImageModule.class, ImageModuleDataDto.class)
         .addMapping(ImageModule::getImageName, ImageModuleDataDto::setName);
 
     return modelMapper;
