@@ -76,14 +76,18 @@ public class ImageController {
    * @return Deleted image or not found
    */
   @DeleteMapping("/{imageId}")
-  public ResponseEntity<ImageModule> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
+  public ResponseEntity<ImageModuleDataDto> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                           @PathVariable final UUID imageId) {
     boolean resourceRemoved = storageService.removeResource(userPrincipal.getUser(), imageId);
     if (!resourceRemoved) {
       return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.of(imageModuleService.deleteImage(userPrincipal.getUser(), imageId));
+    return ResponseEntity.of(
+        imageModuleService
+            .deleteImage(userPrincipal.getUser(), imageId)
+            .map(image -> modelMapper.map(image, ImageModuleDataDto.class))
+    );
   }
   
   @PostMapping("")
