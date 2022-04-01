@@ -7,6 +7,7 @@ import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.model.modules.ImageModule;
+import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
 import java.util.Optional;
@@ -24,15 +25,18 @@ import org.springframework.stereotype.Service;
 public class ModuleService {
   private final JournalEntryService journalEntryService;
   private final ImageModuleService imageModuleService;
+  private final TagModuleService tagModuleService;
 
   private final ModelMapper modelMapper;
 
   @Autowired
   public ModuleService(JournalEntryService journalEntryService,
                        ImageModuleService imageModuleService,
+                       TagModuleService tagModuleService,
                        ModelMapper modelMapper) {
     this.journalEntryService = journalEntryService;
     this.imageModuleService = imageModuleService;
+    this.tagModuleService = tagModuleService;
     this.modelMapper = modelMapper;
   }
 
@@ -45,10 +49,11 @@ public class ModuleService {
   }
 
   private List<TagModuleDataDto> getTagModuleData(User user, JournalEntry entry) {
-    TagModuleDataDto test = new TagModuleDataDto();
-    test.setId(UUID.randomUUID());
-    test.setName("TEST TAG");
-    return List.of(test);
+    return tagModuleService
+        .getTagsForEntry(user, entry)
+        .stream()
+        .map(tag -> modelMapper.map(tag, TagModuleDataDto.class))
+        .collect(Collectors.toList());
   }
 
   /**
