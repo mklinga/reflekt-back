@@ -32,6 +32,10 @@ public class Tag {
   @Setter
   private String name;
 
+  @Column(name = "color")
+  @Setter
+  private String color;
+
   @ManyToOne
   @Setter
   @JoinColumn(name = "owner", nullable = false)

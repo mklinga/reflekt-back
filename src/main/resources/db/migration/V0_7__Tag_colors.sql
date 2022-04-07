@@ -1,0 +1,1 @@
+ALTER TABLE "module_tag_tags" ADD COLUMN color VARCHAR(20);

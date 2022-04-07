@@ -6,8 +6,6 @@ import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.ImageModule;
-import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
 import java.util.Optional;

@@ -7,4 +7,5 @@ import lombok.Data;
 public class TagModuleDataDto {
   private UUID id;
   private String name;
+  private String color;
 }

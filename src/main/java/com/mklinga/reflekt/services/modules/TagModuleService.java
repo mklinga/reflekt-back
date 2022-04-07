@@ -5,7 +5,6 @@ import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.repositories.modules.TagModuleRepository;
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
