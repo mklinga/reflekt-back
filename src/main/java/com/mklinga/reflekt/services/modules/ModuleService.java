@@ -6,6 +6,7 @@ import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
+import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.services.JournalEntryService;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Main Service to handle all the module-related data fetching and manipulation. Uses individual
@@ -69,6 +71,23 @@ public class ModuleService {
           moduleData.setImages(getImageModuleData(userPrincipal.getUser(), entry));
           moduleData.setTags(getTagModuleData(userPrincipal.getUser(), entry));
           return moduleData;
+        });
+  }
+
+  @Transactional(readOnly = false)
+  public void updateModuleData(
+      UserPrincipal userPrincipal, UUID entryId, ModuleDataDto moduleData) {
+
+    List<Tag> tags = moduleData
+        .getTags()
+        .stream()
+        .map(tagDto -> modelMapper.map(tagDto, Tag.class))
+        .collect(Collectors.toList());
+
+    journalEntryService
+        .getJournalEntry(userPrincipal, entryId).map(entry -> {
+          tagModuleService.updateTags(userPrincipal.getUser(), entry, tags);
+          return null;
         });
   }
 }

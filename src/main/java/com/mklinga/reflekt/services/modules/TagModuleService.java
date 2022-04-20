@@ -36,4 +36,28 @@ public class TagModuleService {
         .setParameter("ownerId", user.getId())
         .getResultList();
   }
+
+  public void clearTagsFromEntry(User user, JournalEntry journalEntry) {
+    entityManager.createNativeQuery("DELETE FROM module_tag_entries e WHERE entry_id = :entryId")
+        .setParameter("entryId", journalEntry.getId())
+        .executeUpdate();
+
+    entityManager.flush();
+  }
+
+  public void setTagsForEntry(User user, JournalEntry journalEntry, List<Tag> tags) {
+    for (Tag tag : tags) {
+      entityManager.createNativeQuery(
+          "INSERT INTO module_tag_entries (tag_id, entry_id) VALUES (:tagId, :entryId)")
+          .setParameter("tagId", tag.getId())
+          .setParameter("entryId", journalEntry.getId())
+          .executeUpdate();
+    }
+  }
+
+  public List<Tag> updateTags(User user, JournalEntry journalEntry, List<Tag> tags) {
+    clearTagsFromEntry(user, journalEntry);
+    setTagsForEntry(user, journalEntry, tags);
+    return getTagsForEntry(user, journalEntry);
+  }
 }

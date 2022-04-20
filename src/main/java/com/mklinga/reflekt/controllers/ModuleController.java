@@ -2,13 +2,17 @@ package com.mklinga.reflekt.controllers;
 
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.UserPrincipal;
+import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.services.modules.ModuleService;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,5 +46,16 @@ public class ModuleController {
     return moduleService.getModuleData(userPrincipal, entryId)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping("{entryId}")
+  public ResponseEntity<List<Tag>> setModuleData(
+      @AuthenticationPrincipal UserPrincipal userPrincipal,
+      @RequestBody ModuleDataDto moduleData,
+      @PathVariable UUID entryId) {
+
+      moduleService.updateModuleData(userPrincipal, entryId, moduleData);
+
+      return ResponseEntity.ok().build();
   }
 }
