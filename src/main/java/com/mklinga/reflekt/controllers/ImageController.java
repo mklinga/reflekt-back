@@ -3,7 +3,6 @@ package com.mklinga.reflekt.controllers;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 import com.mklinga.reflekt.dtos.ImageModuleDataDto;
-import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.model.modules.ImageModule;
 import com.mklinga.reflekt.services.JournalEntryService;

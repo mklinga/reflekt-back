@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.services.modules;
 
+import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.modules.Tag;
@@ -7,6 +8,7 @@ import com.mklinga.reflekt.repositories.modules.TagModuleRepository;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,18 @@ public class TagModuleService {
   @PersistenceContext
   EntityManager entityManager;
 
+  private final ModelMapper modelMapper;
+
   @Autowired
-  public TagModuleService(TagModuleRepository tagModuleRepository) {
+  public TagModuleService(TagModuleRepository tagModuleRepository, ModelMapper modelMapper) {
     this.tagModuleRepository = tagModuleRepository;
+    this.modelMapper = modelMapper;
+  }
+
+  public Tag addNewTag(User user, TagModuleDataDto tagModuleDataDto) {
+    Tag tag = modelMapper.map(tagModuleDataDto, Tag.class);
+    tag.setOwner(user);
+    return tagModuleRepository.save(tag);
   }
 
   public List<Tag> getAllTagsForOwner(User user) {
