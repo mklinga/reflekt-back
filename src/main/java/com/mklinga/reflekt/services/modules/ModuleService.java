@@ -78,15 +78,17 @@ public class ModuleService {
   public void updateModuleData(
       UserPrincipal userPrincipal, UUID entryId, ModuleDataDto moduleData) {
 
-    List<Tag> tags = moduleData
-        .getTags()
-        .stream()
-        .map(tagDto -> modelMapper.map(tagDto, Tag.class))
-        .collect(Collectors.toList());
+    List<TagModuleDataDto> tagsDto = moduleData.getTags();
 
     journalEntryService
         .getJournalEntry(userPrincipal, entryId).map(entry -> {
-          tagModuleService.updateTags(userPrincipal.getUser(), entry, tags);
+          if (tagsDto != null) {
+            List<Tag> tags = tagsDto.stream()
+                .map(tagDto -> modelMapper.map(tagDto, Tag.class))
+                .collect(Collectors.toList());
+
+            tagModuleService.updateTags(userPrincipal.getUser(), entry, tags);
+          }
           return null;
         });
   }
