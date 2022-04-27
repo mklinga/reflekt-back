@@ -2,19 +2,24 @@ package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
+import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.UserPrincipal;
+import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
+import com.mklinga.reflekt.services.modules.TagModuleService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -27,11 +32,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JournalEntryService {
 
-  @Autowired
-  private JournalEntryRepository journalEntryRepository;
+  private final JournalEntryRepository journalEntryRepository;
+  private final TagModuleService tagModuleService;
+  private final ModelMapper modelMapper;
 
   @Autowired
-  private ModelMapper modelMapper;
+  public JournalEntryService(JournalEntryRepository journalEntryRepository,
+                             ModelMapper modelMapper,
+                             TagModuleService tagModuleService) {
+    this.journalEntryRepository = journalEntryRepository;
+    this.tagModuleService = tagModuleService;
+    this.modelMapper = modelMapper;
+  }
 
   @PersistenceContext
   EntityManager entityManager;
@@ -44,15 +56,27 @@ public class JournalEntryService {
   @Transactional(readOnly = true)
   public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user) {
     List<JournalEntry> entries = getAllJournalEntries(user);
-    List<UUID> resultList = entityManager
+    List<UUID> entriesWithImages = entityManager
         .createQuery(
             "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = :owner AND m.deleted = false")
         .setParameter("owner", user.getUser())
         .getResultList();
 
+    Map<UUID, List<Tag>> tagsByEntryId = tagModuleService
+        .getMapOfTagsByEntryIdForUser(user.getUser());
+
     return entries.stream().map(entry -> {
       JournalListItemDto listItem = modelMapper.map(entry, JournalListItemDto.class);
-      listItem.setHasImages(resultList.contains(listItem.getId()));
+      listItem.setHasImages(entriesWithImages.contains(listItem.getId()));
+      if (tagsByEntryId.containsKey(entry.getId())) {
+        listItem.setTags(tagsByEntryId
+            .get(entry.getId())
+            .stream()
+            .sorted(Comparator.comparing(a -> a.getColor().toLowerCase(Locale.ROOT)))
+            .map(tag -> modelMapper.map(tag, TagModuleDataDto.class))
+            .collect(Collectors.toList()));
+      }
+
       return listItem;
     }).collect(Collectors.toList());
   }

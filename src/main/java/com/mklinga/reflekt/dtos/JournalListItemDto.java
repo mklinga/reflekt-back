@@ -2,6 +2,7 @@ package com.mklinga.reflekt.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
 
@@ -20,4 +21,6 @@ public class JournalListItemDto {
 
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
+
+  private List<TagModuleDataDto> tags;
 }
