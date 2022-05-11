@@ -46,8 +46,8 @@ public class JournalController {
    */
   @GetMapping("")
   public ResponseEntity<List<JournalListItemDto>> getJournalEntries(
-      @AuthenticationPrincipal UserPrincipal user, @RequestParam(name = "search", required = false) String filter) {
-    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user, filter);
+      @AuthenticationPrincipal UserPrincipal user, @RequestParam(required = false) String search) {
+    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user, search);
 
     return ResponseEntity.ok(all);
   }

@@ -53,16 +53,16 @@ public class JournalEntryService {
     return journalEntryRepository.findAllByOwner(user.getUser(), sort);
   }
 
-  private List<JournalEntry> getFilteredJournalEntries(UserPrincipal user, String filter) {
+  private List<JournalEntry> getFilteredJournalEntries(UserPrincipal user, String search) {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-    return journalEntryRepository.findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), filter, sort);
+    return journalEntryRepository.findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
   }
 
   @Transactional(readOnly = true)
-  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user, String filter) {
-    List<JournalEntry> entries = (filter == null)
+  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user, String search) {
+    List<JournalEntry> entries = (search == null)
         ? getAllJournalEntries(user)
-        : getFilteredJournalEntries(user, filter);
+        : getFilteredJournalEntries(user, search);
     List<UUID> entriesWithImages = entityManager
         .createQuery(
             "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = :owner AND m.deleted = false")
