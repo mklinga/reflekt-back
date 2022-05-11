@@ -48,14 +48,21 @@ public class JournalEntryService {
   @PersistenceContext
   EntityManager entityManager;
 
-  public List<JournalEntry> getAllJournalEntries(UserPrincipal user) {
+  private List<JournalEntry> getAllJournalEntries(UserPrincipal user) {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
     return journalEntryRepository.findAllByOwner(user.getUser(), sort);
   }
 
+  private List<JournalEntry> getFilteredJournalEntries(UserPrincipal user, String filter) {
+    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
+    return journalEntryRepository.findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), filter, sort);
+  }
+
   @Transactional(readOnly = true)
-  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user) {
-    List<JournalEntry> entries = getAllJournalEntries(user);
+  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user, String filter) {
+    List<JournalEntry> entries = (filter == null)
+        ? getAllJournalEntries(user)
+        : getFilteredJournalEntries(user, filter);
     List<UUID> entriesWithImages = entityManager
         .createQuery(
             "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = :owner AND m.deleted = false")

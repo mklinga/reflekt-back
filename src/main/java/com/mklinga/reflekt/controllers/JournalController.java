@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -44,9 +45,9 @@ public class JournalController {
    * @return list of JournalListItems
    */
   @GetMapping("")
-  public ResponseEntity<List<JournalListItemDto>> getJournalEntries(@AuthenticationPrincipal
-                                                                        UserPrincipal user) {
-    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user);
+  public ResponseEntity<List<JournalListItemDto>> getJournalEntries(
+      @AuthenticationPrincipal UserPrincipal user, @RequestParam(name = "search", required = false) String filter) {
+    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user, filter);
 
     return ResponseEntity.ok(all);
   }
