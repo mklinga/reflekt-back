@@ -2,9 +2,11 @@ package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
+import com.mklinga.reflekt.dtos.SearchResultDto;
 import com.mklinga.reflekt.dtos.TagModuleDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
+import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.model.modules.Tag;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
@@ -173,5 +175,30 @@ public class JournalEntryService {
 
     journalEntryRepository.deleteById(uuid);
     return true;
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<List<SearchResultDto>> getSearchResults(User user, String query, String tag) {
+    if (query != null && tag != null) {
+      /* TODO: searching for both */
+      return Optional.empty();
+    }
+
+    if (query != null) {
+      Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
+      List<JournalEntry> entries = journalEntryRepository
+          .findAllByOwnerAndEntryContainingIgnoreCase(user, query, sort);
+      return Optional.of(
+          entries
+          .stream()
+          .map(entry -> modelMapper.map(entry, SearchResultDto.class))
+          .collect(Collectors.toList()));
+    }
+
+    if (tag != null) {
+      /* TODO: tag search */
+    }
+
+    return Optional.empty();
   }
 }
