@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="Reflekt" packages="">
+    <Appenders>
+        <RollingFile name="RollingFile" fileName="logs/app.log"
+                     filePattern="logs/app-%d{MM-dd-yyyy}.log.gz">
+            <PatternLayout>
+                <Pattern>%d %p %c %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d [%t] %-5level: %msg%n%throwable}" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="RollingFile" level="DEBUG" />
+            <AppenderRef ref="Console" level="INFO" />
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="Reflekt" packages="">
+    <Appenders>
+        <RollingFile name="RollingFile" fileName="/home/ec2-user/logs/app.log"
+                     filePattern="/home/ec2-user/logs/app-%d{MM-dd-yyyy}.log.gz">
+            <PatternLayout>
+                <Pattern>%d %p %c %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="2"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="RollingFile" level="DEBUG" />
+        </Root>
+    </Loggers>
+</Configuration>
