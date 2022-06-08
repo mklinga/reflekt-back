@@ -34,6 +34,14 @@ public class ImageController {
   private final JournalEntryService journalEntryService;
   private final ModelMapper modelMapper;
 
+  /**
+   * Main controller for downloading/uploading images.
+   *
+   * @param storageService Service that handles physical storage
+   * @param imageModuleService Service that handles database layer
+   * @param journalEntryService Service that deals with the journal entries
+   * @param modelMapper Modelmapper used to convert between models and DTOs
+   */
   @Autowired
   public ImageController(StorageService storageService, ImageModuleService imageModuleService,
                          JournalEntryService journalEntryService, ModelMapper modelMapper) {
@@ -74,8 +82,9 @@ public class ImageController {
    * @return Deleted image or not found
    */
   @DeleteMapping("/{imageId}")
-  public ResponseEntity<ImageModuleDataDto> deleteImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                          @PathVariable final UUID imageId) {
+  public ResponseEntity<ImageModuleDataDto> deleteImage(
+      @AuthenticationPrincipal UserPrincipal userPrincipal,
+      @PathVariable final UUID imageId) {
     boolean resourceRemoved = storageService.removeResource(userPrincipal.getUser(), imageId);
     if (!resourceRemoved) {
       return ResponseEntity.notFound().build();
@@ -87,11 +96,20 @@ public class ImageController {
             .map(image -> modelMapper.map(image, ImageModuleDataDto.class))
     );
   }
-  
+
+  /**
+   * Handler method that takes care of uploading new images.
+   *
+   * @param userPrincipal The authenticated user
+   * @param file (image)file that is being uploaded
+   * @param entryId ID of the journal entry, in which this image is related to
+   * @return Meta information about the newly posted image
+   */
   @PostMapping("")
-  public ResponseEntity<ImageModuleDataDto> postImage(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                      @RequestParam("file") MultipartFile file,
-                                                      @RequestParam("journalEntry") UUID entryId) {
+  public ResponseEntity<ImageModuleDataDto> postImage(
+      @AuthenticationPrincipal UserPrincipal userPrincipal,
+      @RequestParam("file") MultipartFile file,
+      @RequestParam("journalEntry") UUID entryId) {
 
     /* TODO
       * error handling:
@@ -106,6 +124,6 @@ public class ImageController {
                   .saveNewImage(userPrincipal.getUser(), journalEntry, file.getOriginalFilename());
               storageService.saveResource(userPrincipal.getUser(), file, image.getId());
               return modelMapper.map(image, ImageModuleDataDto.class);
-        }));
+            }));
   }
 }

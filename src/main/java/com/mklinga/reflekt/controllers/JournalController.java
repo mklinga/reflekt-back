@@ -7,7 +7,6 @@ import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

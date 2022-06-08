@@ -9,6 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +25,27 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "entries")
 @Setter
 @Getter
+@NamedQueries({
+    @NamedQuery(
+        name = "JournalEntry_GetEntriesWithImages",
+        query = "SELECT e.id FROM JournalEntry e"
+            + " INNER JOIN ImageModule m ON m.journalEntry = e"
+            + " WHERE e.owner = :owner AND m.deleted = false")
+})
+@NamedNativeQueries(
+    @NamedNativeQuery(
+        name = "JournalEntry_GetNavigationData",
+        query = "WITH e AS ("
+            + " SELECT id,"
+            + " lag(id) OVER (ORDER BY entry_date) AS previous,"
+            + " lead(id) OVER (ORDER BY entry_date) AS next"
+            + " FROM entries WHERE owner = :owner ORDER BY entry_date ASC)"
+            + " SELECT cast(id as varchar),"
+            + " cast(previous as varchar),"
+            + " cast(next as varchar)"
+            + " FROM e WHERE e.id = :id"
+    )
+)
 public class JournalEntry {
   @Id
   @GeneratedValue(generator = "UUID")

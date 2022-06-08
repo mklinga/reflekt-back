@@ -12,6 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 
+  /**
+   * Creates a single instance of modelmapper that is used throughout the application.
+   *
+   * @return modelMapper
+   */
   @Bean
   public ModelMapper modelMapper() {
     ModelMapper modelMapper = new ModelMapper();

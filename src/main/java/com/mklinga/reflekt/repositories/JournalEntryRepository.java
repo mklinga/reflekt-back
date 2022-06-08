@@ -13,7 +13,10 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface JournalEntryRepository extends CrudRepository<JournalEntry, UUID> {
   public List<JournalEntry> findAllByOwner(User user, Sort sort);
-  public List<JournalEntry> findAllByOwnerAndEntryContainingIgnoreCase(User user, String search, Sort sort);
+
+  public List<JournalEntry> findAllByOwnerAndEntryContainingIgnoreCase(
+      User user, String search, Sort sort
+  );
 
   public Optional<JournalEntry> findByOwnerAndId(User user, UUID id);
 }

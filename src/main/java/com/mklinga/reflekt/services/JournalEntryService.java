@@ -38,6 +38,13 @@ public class JournalEntryService {
   private final TagModuleService tagModuleService;
   private final ModelMapper modelMapper;
 
+  /**
+   * JournalEntryService deals with all the manipulation/fetching of the journal entries.
+   *
+   * @param journalEntryRepository Database handler for journal entries
+   * @param modelMapper Mapper that is used in converting between models and DTOs
+   * @param tagModuleService Service that deals with the tags
+   */
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
                              ModelMapper modelMapper,
@@ -57,17 +64,26 @@ public class JournalEntryService {
 
   private List<JournalEntry> getFilteredJournalEntries(UserPrincipal user, String search) {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-    return journalEntryRepository.findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
+    return journalEntryRepository
+        .findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
   }
 
+  /**
+   * Retrieves a list of all the journal entries in "listitem" format. This format is used in the
+   * main /journal view of the application and doesn't need all the data from the items (most
+   * notably, the actual entry text is omitted).
+   *
+   * @param user Authenticated user
+   * @param search Possible search text
+   * @return List of all items, if search is null, or a filtered list if search is enabled
+   */
   @Transactional(readOnly = true)
   public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user, String search) {
     List<JournalEntry> entries = (search == null)
         ? getAllJournalEntries(user)
         : getFilteredJournalEntries(user, search);
     List<UUID> entriesWithImages = entityManager
-        .createQuery(
-            "SELECT e.id FROM JournalEntry e INNER JOIN ImageModule m ON m.journalEntry = e WHERE e.owner = :owner AND m.deleted = false")
+        .createNamedQuery("JournalEntry_GetEntriesWithImages")
         .setParameter("owner", user.getUser())
         .getResultList();
 
@@ -94,18 +110,16 @@ public class JournalEntryService {
     return journalEntryRepository.findByOwnerAndId(user.getUser(), uuid);
   }
 
+  /**
+   * Returns the navigation data (next/previous) to the JournalEntry.
+   *
+   * @param user Authenticated user
+   * @param entryId ID of the journal entry
+   * @return NavigationData
+   */
   public NavigationData getEntryNavigationData(UserPrincipal user, UUID entryId) {
-    Object[] result = (Object[]) entityManager.createNativeQuery(
-            new StringBuilder().append("WITH e AS (")
-                .append(" SELECT id,")
-                .append(" lag(id) OVER (ORDER BY entry_date) AS previous,")
-                .append(" lead(id) OVER (ORDER BY entry_date) AS next")
-                .append(" FROM entries WHERE owner = :owner ORDER BY entry_date ASC")
-                .append(" )")
-                .append(" SELECT cast(id as varchar),")
-                .append(" cast(previous as varchar),")
-                .append(" cast(next as varchar)")
-                .append(" FROM e WHERE e.id = :id").toString())
+    Object[] result = (Object[]) entityManager
+        .createNamedQuery("JournalEntry_GetNavigationData")
         .setParameter("owner", user.getUser().getId())
         .setParameter("id", entryId)
         .getSingleResult();
@@ -116,11 +130,11 @@ public class JournalEntryService {
     }
 
     if (result[1] != null) {
-      navigationData.setPrevious(UUID.fromString((String)result[1]));
+      navigationData.setPrevious(UUID.fromString((String) result[1]));
     }
 
     if (result[2] != null) {
-      navigationData.setNext(UUID.fromString((String)result[2]));
+      navigationData.setNext(UUID.fromString((String) result[2]));
     }
 
     return navigationData;
@@ -177,6 +191,15 @@ public class JournalEntryService {
     return true;
   }
 
+  /**
+   * Returns a list of journal entries formatted as SearchResultDto based on the query text or a
+   * tag name.
+   *
+   * @param user Authenticated user
+   * @param query Query text (can be null)
+   * @param tag Tag name (can be null)
+   * @return List of matching search results
+   */
   @Transactional(readOnly = true)
   public Optional<List<SearchResultDto>> getSearchResults(User user, String query, String tag) {
     if (query != null && tag != null) {

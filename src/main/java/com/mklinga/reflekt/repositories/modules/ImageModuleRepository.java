@@ -12,6 +12,9 @@ import org.springframework.data.repository.CrudRepository;
  * Provides interface for interacting with the ImageModule database table.
  */
 public interface ImageModuleRepository extends CrudRepository<ImageModule, UUID> {
-  List<ImageModule> findByJournalEntryAndOwnerAndDeleted(JournalEntry journalEntry, User user, boolean deleted);
+  List<ImageModule> findByJournalEntryAndOwnerAndDeleted(
+      JournalEntry journalEntry, User user, boolean deleted
+  );
+
   Optional<ImageModule> findByOwnerAndId(User user, UUID id);
 }
