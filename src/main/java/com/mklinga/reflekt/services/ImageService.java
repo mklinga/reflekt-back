@@ -1,9 +1,9 @@
-package com.mklinga.reflekt.services.modules;
+package com.mklinga.reflekt.services;
 
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
-import com.mklinga.reflekt.model.modules.ImageModule;
-import com.mklinga.reflekt.repositories.modules.ImageModuleRepository;
+import com.mklinga.reflekt.model.Image;
+import com.mklinga.reflekt.repositories.ImageRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,20 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Handles the interaction with the ImageModule repository, adding/removing/fetching image names
+ * Handles the interaction with the Image repository, adding/removing/fetching image names
  * related to the JournalEntry.
  */
 @Service
-public class ImageModuleService {
-  private ImageModuleRepository imageModuleRepository;
+public class ImageService {
+  private ImageRepository imageRepository;
 
   @Autowired
-  public ImageModuleService(ImageModuleRepository imageModuleRepository) {
-    this.imageModuleRepository = imageModuleRepository;
+  public ImageService(ImageRepository imageRepository) {
+    this.imageRepository = imageRepository;
   }
 
-  public List<ImageModule> getAllImagesForEntry(User user, JournalEntry journalEntry) {
-    return imageModuleRepository
+  public List<Image> getAllImagesForEntry(User user, JournalEntry journalEntry) {
+    return imageRepository
         .findByJournalEntryAndOwnerAndDeleted(journalEntry, user, false);
   }
 
@@ -35,32 +35,32 @@ public class ImageModuleService {
    * @param imageId UUID of the image
    * @return deleted image if found
    */
-  public Optional<ImageModule> deleteImage(User user, UUID imageId) {
-    return imageModuleRepository
+  public Optional<Image> deleteImage(User user, UUID imageId) {
+    return imageRepository
         .findByOwnerAndId(user, imageId)
         .map(image -> {
           image.setDeleted(true);
-          return Optional.of(imageModuleRepository.save(image));
+          return Optional.of(imageRepository.save(image));
         })
         .orElse(Optional.empty());
   }
 
   /**
-   * Save new image information into the imageModuleRepository.
+   * Save new image information into the imageRepository.
    *
    * @param user Logged-in user
    * @param journalEntry Journal entry in which the image is related to
    * @param imageName Original filename of the image
    * @return newly saved image
    */
-  public ImageModule saveNewImage(User user, JournalEntry journalEntry, String imageName) {
-    ImageModule image = new ImageModule();
+  public Image saveNewImage(User user, JournalEntry journalEntry, String imageName) {
+    Image image = new Image();
     image.setJournalEntry(journalEntry);
     image.setImageName(imageName);
     image.setOwner(user);
     image.setDeleted(false);
     // TODO: Allow other mime types
     image.setMimeType("image/jpeg");
-    return imageModuleRepository.save(image);
+    return imageRepository.save(image);
   }
 }

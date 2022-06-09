@@ -7,7 +7,7 @@ import lombok.Data;
  * Data transfer object for the image metadata.
  */
 @Data
-public class ImageModuleDataDto {
+public class ImageDataDto {
   private UUID id;
   private String name;
 }

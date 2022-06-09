@@ -29,7 +29,7 @@ import org.hibernate.annotations.GenericGenerator;
     @NamedQuery(
         name = "JournalEntry_GetEntriesWithImages",
         query = "SELECT e.id FROM JournalEntry e"
-            + " INNER JOIN ImageModule m ON m.journalEntry = e"
+            + " INNER JOIN Image m ON m.journalEntry = e"
             + " WHERE e.owner = :owner AND m.deleted = false")
 })
 @NamedNativeQueries(

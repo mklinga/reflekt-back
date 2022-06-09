@@ -1,7 +1,5 @@
-package com.mklinga.reflekt.model.modules;
+package com.mklinga.reflekt.model;
 
-import com.mklinga.reflekt.model.JournalEntry;
-import com.mklinga.reflekt.model.User;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,14 +13,14 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * ImageModule entity contains rows mapping journal entry into stored image names. One Entry may
+ * Image entity contains rows mapping journal entry into stored image names. One Entry may
  * have multiple images. Storing/fetching of the actual image data is handled by the /images/
  * endpoint.
  */
 @Entity
-@Table(name = "module_image_images")
+@Table(name = "images")
 @Getter
-public class ImageModule {
+public class Image {
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")

@@ -1,13 +1,15 @@
 package com.mklinga.reflekt.services.modules;
 
-import com.mklinga.reflekt.dtos.ImageModuleDataDto;
+import com.mklinga.reflekt.dtos.ImageDataDto;
 import com.mklinga.reflekt.dtos.ModuleDataDto;
-import com.mklinga.reflekt.dtos.TagModuleDataDto;
+import com.mklinga.reflekt.dtos.TagDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.Tag;
+import com.mklinga.reflekt.model.Tag;
+import com.mklinga.reflekt.services.ImageService;
 import com.mklinga.reflekt.services.JournalEntryService;
+import com.mklinga.reflekt.services.TagService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,35 +26,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ModuleService {
   private final JournalEntryService journalEntryService;
-  private final ImageModuleService imageModuleService;
-  private final TagModuleService tagModuleService;
+  private final ImageService imageService;
+  private final TagService tagService;
 
   private final ModelMapper modelMapper;
 
   @Autowired
   public ModuleService(JournalEntryService journalEntryService,
-                       ImageModuleService imageModuleService,
-                       TagModuleService tagModuleService,
+                       ImageService imageService,
+                       TagService tagService,
                        ModelMapper modelMapper) {
     this.journalEntryService = journalEntryService;
-    this.imageModuleService = imageModuleService;
-    this.tagModuleService = tagModuleService;
+    this.imageService = imageService;
+    this.tagService = tagService;
     this.modelMapper = modelMapper;
   }
 
-  private List<ImageModuleDataDto> getImageModuleData(User user, JournalEntry entry) {
-    return imageModuleService
+  private List<ImageDataDto> getImageModuleData(User user, JournalEntry entry) {
+    return imageService
         .getAllImagesForEntry(user, entry)
         .stream()
-        .map(image -> modelMapper.map(image, ImageModuleDataDto.class))
+        .map(image -> modelMapper.map(image, ImageDataDto.class))
         .collect(Collectors.toList());
   }
 
-  private List<TagModuleDataDto> getTagModuleData(User user, JournalEntry entry) {
-    return tagModuleService
+  private List<TagDataDto> getTagModuleData(User user, JournalEntry entry) {
+    return tagService
         .getTagsForEntry(user, entry)
         .stream()
-        .map(tag -> modelMapper.map(tag, TagModuleDataDto.class))
+        .map(tag -> modelMapper.map(tag, TagDataDto.class))
         .collect(Collectors.toList());
   }
 
@@ -78,7 +80,7 @@ public class ModuleService {
   public void updateModuleData(
       UserPrincipal userPrincipal, UUID entryId, ModuleDataDto moduleData) {
 
-    List<TagModuleDataDto> tagsDto = moduleData.getTags();
+    List<TagDataDto> tagsDto = moduleData.getTags();
 
     journalEntryService
         .getJournalEntry(userPrincipal, entryId).map(entry -> {
@@ -87,7 +89,7 @@ public class ModuleService {
                 .map(tagDto -> modelMapper.map(tagDto, Tag.class))
                 .collect(Collectors.toList());
 
-            tagModuleService.updateTags(userPrincipal.getUser(), entry, tags);
+            tagService.updateTags(userPrincipal.getUser(), entry, tags);
           }
           return null;
         });

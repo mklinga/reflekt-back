@@ -1,4 +1,4 @@
-package com.mklinga.reflekt.model.modules;
+package com.mklinga.reflekt.model;
 
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
@@ -23,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
  * together. Tags are dynamic, and each tag must have exactly one owner.
  */
 @Entity
-@Table(name = "module_tag_tags")
+@Table(name = "tags")
 @Getter
 public class Tag {
   @Id
@@ -47,7 +47,7 @@ public class Tag {
   private User owner;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "module_tag_entries",
+  @JoinTable(name = "tag_entries",
       joinColumns = @JoinColumn(name = "tag_id"),
       inverseJoinColumns = @JoinColumn(name = "entry_id"))
   private List<JournalEntry> journalEntry;

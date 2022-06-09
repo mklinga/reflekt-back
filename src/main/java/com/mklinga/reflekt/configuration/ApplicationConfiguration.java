@@ -1,7 +1,7 @@
 package com.mklinga.reflekt.configuration;
 
-import com.mklinga.reflekt.dtos.ImageModuleDataDto;
-import com.mklinga.reflekt.model.modules.ImageModule;
+import com.mklinga.reflekt.dtos.ImageDataDto;
+import com.mklinga.reflekt.model.Image;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +24,8 @@ public class ApplicationConfiguration {
     /* Custom field mappings */
 
     modelMapper
-        .typeMap(ImageModule.class, ImageModuleDataDto.class)
-        .addMapping(ImageModule::getImageName, ImageModuleDataDto::setName);
+        .typeMap(Image.class, ImageDataDto.class)
+        .addMapping(Image::getImageName, ImageDataDto::setName);
 
     return modelMapper;
   }

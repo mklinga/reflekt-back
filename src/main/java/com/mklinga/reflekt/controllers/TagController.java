@@ -1,9 +1,9 @@
 package com.mklinga.reflekt.controllers;
 
-import com.mklinga.reflekt.dtos.TagModuleDataDto;
+import com.mklinga.reflekt.dtos.TagDataDto;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.Tag;
-import com.mklinga.reflekt.services.modules.TagModuleService;
+import com.mklinga.reflekt.model.Tag;
+import com.mklinga.reflekt.services.TagService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -19,26 +19,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tags")
 public class TagController {
-  private final TagModuleService tagModuleService;
+  private final TagService tagService;
   private final ModelMapper modelMapper;
 
   @Autowired
-  public TagController(TagModuleService tagModuleService, ModelMapper modelMapper) {
-    this.tagModuleService = tagModuleService;
+  public TagController(TagService tagService, ModelMapper modelMapper) {
+    this.tagService = tagService;
     this.modelMapper = modelMapper;
   }
 
   @GetMapping("/")
-  public List<TagModuleDataDto> getAllTags(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-    return tagModuleService.getAllTagsForOwner(userPrincipal.getUser()).stream()
-        .map(tag -> modelMapper.map(tag, TagModuleDataDto.class))
+  public List<TagDataDto> getAllTags(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    return tagService.getAllTagsForOwner(userPrincipal.getUser()).stream()
+        .map(tag -> modelMapper.map(tag, TagDataDto.class))
         .collect(Collectors.toList());
   }
 
   @PostMapping("")
-  public ResponseEntity<TagModuleDataDto> addNewTag(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                   @RequestBody TagModuleDataDto tag) {
-    Tag newTag = tagModuleService.addNewTag(userPrincipal.getUser(), tag);
-    return ResponseEntity.ok(modelMapper.map(newTag, TagModuleDataDto.class));
+  public ResponseEntity<TagDataDto> addNewTag(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                              @RequestBody TagDataDto tag) {
+    Tag newTag = tagService.addNewTag(userPrincipal.getUser(), tag);
+    return ResponseEntity.ok(modelMapper.map(newTag, TagDataDto.class));
   }
 }

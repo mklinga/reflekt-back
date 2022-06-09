@@ -2,7 +2,7 @@ package com.mklinga.reflekt.controllers;
 
 import com.mklinga.reflekt.dtos.ModuleDataDto;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.Tag;
+import com.mklinga.reflekt.model.Tag;
 import com.mklinga.reflekt.services.modules.ModuleService;
 import java.util.List;
 import java.util.UUID;

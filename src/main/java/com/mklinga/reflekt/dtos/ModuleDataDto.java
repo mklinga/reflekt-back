@@ -4,10 +4,10 @@ import java.util.List;
 import lombok.Data;
 
 /**
- * Data transfer object for the ImageModule data.
+ * Data transfer object for the Image data.
  */
 @Data
 public class ModuleDataDto {
-  private List<ImageModuleDataDto> images;
-  private List<TagModuleDataDto> tags;
+  private List<ImageDataDto> images;
+  private List<TagDataDto> tags;
 }

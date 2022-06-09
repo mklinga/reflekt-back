@@ -1,10 +1,10 @@
-package com.mklinga.reflekt.services.modules;
+package com.mklinga.reflekt.services;
 
-import com.mklinga.reflekt.dtos.TagModuleDataDto;
+import com.mklinga.reflekt.dtos.TagDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.User;
-import com.mklinga.reflekt.model.modules.Tag;
-import com.mklinga.reflekt.repositories.modules.TagModuleRepository;
+import com.mklinga.reflekt.model.Tag;
+import com.mklinga.reflekt.repositories.TagRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TagModuleService {
-  private final TagModuleRepository tagModuleRepository;
+public class TagService {
+  private final TagRepository tagRepository;
 
   @PersistenceContext
   EntityManager entityManager;
@@ -26,25 +26,25 @@ public class TagModuleService {
   private final ModelMapper modelMapper;
 
   @Autowired
-  public TagModuleService(TagModuleRepository tagModuleRepository, ModelMapper modelMapper) {
-    this.tagModuleRepository = tagModuleRepository;
+  public TagService(TagRepository tagRepository, ModelMapper modelMapper) {
+    this.tagRepository = tagRepository;
     this.modelMapper = modelMapper;
   }
 
-  public Tag addNewTag(User user, TagModuleDataDto tagModuleDataDto) {
-    Tag tag = modelMapper.map(tagModuleDataDto, Tag.class);
+  public Tag addNewTag(User user, TagDataDto tagDataDto) {
+    Tag tag = modelMapper.map(tagDataDto, Tag.class);
     tag.setOwner(user);
-    return tagModuleRepository.save(tag);
+    return tagRepository.save(tag);
   }
 
   public List<Tag> getAllTagsForOwner(User user) {
-    return tagModuleRepository.findByOwner(user);
+    return tagRepository.findByOwner(user);
   }
 
   public List<Tag> getTagsForEntry(User user, JournalEntry journalEntry) {
     return entityManager
         .createNativeQuery(
-            "SELECT t.* FROM module_tag_entries e INNER JOIN module_tag_tags t ON e.tag_id = t.id WHERE entry_id = :entryId AND t.owner = :ownerId",
+            "SELECT t.* FROM tag_entries e INNER JOIN tags t ON e.tag_id = t.id WHERE entry_id = :entryId AND t.owner = :ownerId",
             Tag.class
         )
         .setParameter("entryId", journalEntry.getId())
@@ -56,8 +56,8 @@ public class TagModuleService {
     List<Object[]> result = entityManager
         .createNativeQuery(
             "SELECT cast(e.id as varchar) as entry_id, cast(t.id as varchar) as tag_id, t.name, t.color FROM entries e" +
-                " INNER JOIN module_tag_entries m ON m.entry_id = e.id" +
-                " INNER JOIN module_tag_tags t ON t.id = m.tag_id" +
+                " INNER JOIN tag_entries m ON m.entry_id = e.id" +
+                " INNER JOIN tags t ON t.id = m.tag_id" +
                 " WHERE e.owner = :owner"
         )
         .setParameter("owner", user.getId())
@@ -85,7 +85,7 @@ public class TagModuleService {
   }
 
   public void clearTagsFromEntry(User user, JournalEntry journalEntry) {
-    entityManager.createNativeQuery("DELETE FROM module_tag_entries e WHERE entry_id = :entryId")
+    entityManager.createNativeQuery("DELETE FROM tag_entries e WHERE entry_id = :entryId")
         .setParameter("entryId", journalEntry.getId())
         .executeUpdate();
 
@@ -95,7 +95,7 @@ public class TagModuleService {
   public void setTagsForEntry(User user, JournalEntry journalEntry, List<Tag> tags) {
     for (Tag tag : tags) {
       entityManager.createNativeQuery(
-          "INSERT INTO module_tag_entries (tag_id, entry_id) VALUES (:tagId, :entryId)")
+          "INSERT INTO tag_entries (tag_id, entry_id) VALUES (:tagId, :entryId)")
           .setParameter("tagId", tag.getId())
           .setParameter("entryId", journalEntry.getId())
           .executeUpdate();

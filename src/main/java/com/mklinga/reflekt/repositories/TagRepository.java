@@ -1,11 +1,11 @@
-package com.mklinga.reflekt.repositories.modules;
+package com.mklinga.reflekt.repositories;
 
 import com.mklinga.reflekt.model.User;
-import com.mklinga.reflekt.model.modules.Tag;
+import com.mklinga.reflekt.model.Tag;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
-public interface TagModuleRepository extends CrudRepository<Tag, UUID> {
+public interface TagRepository extends CrudRepository<Tag, UUID> {
   List<Tag> findByOwner(User user);
 }

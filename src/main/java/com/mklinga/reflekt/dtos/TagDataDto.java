@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class TagModuleDataDto {
+public class TagDataDto {
   private UUID id;
   private String name;
   private String color;

@@ -22,5 +22,5 @@ public class JournalListItemDto {
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate entryDate;
 
-  private List<TagModuleDataDto> tags;
+  private List<TagDataDto> tags;
 }

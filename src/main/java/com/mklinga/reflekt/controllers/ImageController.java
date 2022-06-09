@@ -2,12 +2,12 @@ package com.mklinga.reflekt.controllers;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-import com.mklinga.reflekt.dtos.ImageModuleDataDto;
+import com.mklinga.reflekt.dtos.ImageDataDto;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.ImageModule;
+import com.mklinga.reflekt.model.Image;
 import com.mklinga.reflekt.services.JournalEntryService;
 import com.mklinga.reflekt.services.StorageService;
-import com.mklinga.reflekt.services.modules.ImageModuleService;
+import com.mklinga.reflekt.services.ImageService;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/images")
 public class ImageController {
   private final StorageService storageService;
-  private final ImageModuleService imageModuleService;
+  private final ImageService imageService;
   private final JournalEntryService journalEntryService;
   private final ModelMapper modelMapper;
 
@@ -38,15 +38,15 @@ public class ImageController {
    * Main controller for downloading/uploading images.
    *
    * @param storageService Service that handles physical storage
-   * @param imageModuleService Service that handles database layer
+   * @param imageService Service that handles database layer
    * @param journalEntryService Service that deals with the journal entries
    * @param modelMapper Modelmapper used to convert between models and DTOs
    */
   @Autowired
-  public ImageController(StorageService storageService, ImageModuleService imageModuleService,
+  public ImageController(StorageService storageService, ImageService imageService,
                          JournalEntryService journalEntryService, ModelMapper modelMapper) {
     this.storageService = storageService;
-    this.imageModuleService = imageModuleService;
+    this.imageService = imageService;
     this.journalEntryService = journalEntryService;
     this.modelMapper = modelMapper;
   }
@@ -82,7 +82,7 @@ public class ImageController {
    * @return Deleted image or not found
    */
   @DeleteMapping("/{imageId}")
-  public ResponseEntity<ImageModuleDataDto> deleteImage(
+  public ResponseEntity<ImageDataDto> deleteImage(
       @AuthenticationPrincipal UserPrincipal userPrincipal,
       @PathVariable final UUID imageId) {
     boolean resourceRemoved = storageService.removeResource(userPrincipal.getUser(), imageId);
@@ -91,9 +91,9 @@ public class ImageController {
     }
 
     return ResponseEntity.of(
-        imageModuleService
+        imageService
             .deleteImage(userPrincipal.getUser(), imageId)
-            .map(image -> modelMapper.map(image, ImageModuleDataDto.class))
+            .map(image -> modelMapper.map(image, ImageDataDto.class))
     );
   }
 
@@ -106,7 +106,7 @@ public class ImageController {
    * @return Meta information about the newly posted image
    */
   @PostMapping("")
-  public ResponseEntity<ImageModuleDataDto> postImage(
+  public ResponseEntity<ImageDataDto> postImage(
       @AuthenticationPrincipal UserPrincipal userPrincipal,
       @RequestParam("file") MultipartFile file,
       @RequestParam("journalEntry") UUID entryId) {
@@ -120,10 +120,10 @@ public class ImageController {
         journalEntryService
             .getJournalEntry(userPrincipal, entryId)
             .map(journalEntry -> {
-              ImageModule image = imageModuleService
+              Image image = imageService
                   .saveNewImage(userPrincipal.getUser(), journalEntry, file.getOriginalFilename());
               storageService.saveResource(userPrincipal.getUser(), file, image.getId());
-              return modelMapper.map(image, ImageModuleDataDto.class);
+              return modelMapper.map(image, ImageDataDto.class);
             }));
   }
 }

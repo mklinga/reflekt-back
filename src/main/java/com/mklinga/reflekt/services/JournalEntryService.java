@@ -3,14 +3,13 @@ package com.mklinga.reflekt.services;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.dtos.SearchResultDto;
-import com.mklinga.reflekt.dtos.TagModuleDataDto;
+import com.mklinga.reflekt.dtos.TagDataDto;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.modules.Tag;
+import com.mklinga.reflekt.model.Tag;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
-import com.mklinga.reflekt.services.modules.TagModuleService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
@@ -35,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JournalEntryService {
 
   private final JournalEntryRepository journalEntryRepository;
-  private final TagModuleService tagModuleService;
+  private final TagService tagService;
   private final ModelMapper modelMapper;
 
   /**
@@ -43,14 +42,14 @@ public class JournalEntryService {
    *
    * @param journalEntryRepository Database handler for journal entries
    * @param modelMapper Mapper that is used in converting between models and DTOs
-   * @param tagModuleService Service that deals with the tags
+   * @param tagService Service that deals with the tags
    */
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
                              ModelMapper modelMapper,
-                             TagModuleService tagModuleService) {
+                             TagService tagService) {
     this.journalEntryRepository = journalEntryRepository;
-    this.tagModuleService = tagModuleService;
+    this.tagService = tagService;
     this.modelMapper = modelMapper;
   }
 
@@ -87,7 +86,7 @@ public class JournalEntryService {
         .setParameter("owner", user.getUser())
         .getResultList();
 
-    Map<UUID, List<Tag>> tagsByEntryId = tagModuleService
+    Map<UUID, List<Tag>> tagsByEntryId = tagService
         .getMapOfTagsByEntryIdForUser(user.getUser());
 
     return entries.stream().map(entry -> {
@@ -98,7 +97,7 @@ public class JournalEntryService {
             .get(entry.getId())
             .stream()
             .sorted(Comparator.comparing(a -> a.getColor().toLowerCase(Locale.ROOT)))
-            .map(tag -> modelMapper.map(tag, TagModuleDataDto.class))
+            .map(tag -> modelMapper.map(tag, TagDataDto.class))
             .collect(Collectors.toList()));
       }
 
