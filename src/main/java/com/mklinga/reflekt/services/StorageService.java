@@ -21,10 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class StorageService {
 
-  @Value("${modules.image-directory}")
+  @Value("${image-directory}")
   private String imageDirectory;
 
-  @Value("${modules.deleted-image-directory-name}")
+  @Value("${deleted-image-directory-name}")
   private String deletedImageDirectoryName;
 
   /* Only JPEG files are supported for now

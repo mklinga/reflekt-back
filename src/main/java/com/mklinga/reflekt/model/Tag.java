@@ -46,9 +46,6 @@ public class Tag {
   @JoinColumn(name = "owner", nullable = false)
   private User owner;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tag_entries",
-      joinColumns = @JoinColumn(name = "tag_id"),
-      inverseJoinColumns = @JoinColumn(name = "entry_id"))
-  private List<JournalEntry> journalEntry;
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
+  private List<JournalEntry> journalEntries;
 }

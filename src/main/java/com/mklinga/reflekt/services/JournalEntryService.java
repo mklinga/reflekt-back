@@ -4,6 +4,7 @@ import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.dtos.SearchResultDto;
 import com.mklinga.reflekt.dtos.TagDataDto;
+import com.mklinga.reflekt.model.Image;
 import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.User;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
@@ -86,20 +88,9 @@ public class JournalEntryService {
         .setParameter("owner", user.getUser())
         .getResultList();
 
-    Map<UUID, List<Tag>> tagsByEntryId = tagService
-        .getMapOfTagsByEntryIdForUser(user.getUser());
-
     return entries.stream().map(entry -> {
       JournalListItemDto listItem = modelMapper.map(entry, JournalListItemDto.class);
       listItem.setHasImages(entriesWithImages.contains(listItem.getId()));
-      if (tagsByEntryId.containsKey(entry.getId())) {
-        listItem.setTags(tagsByEntryId
-            .get(entry.getId())
-            .stream()
-            .sorted(Comparator.comparing(a -> a.getColor().toLowerCase(Locale.ROOT)))
-            .map(tag -> modelMapper.map(tag, TagDataDto.class))
-            .collect(Collectors.toList()));
-      }
 
       return listItem;
     }).collect(Collectors.toList());

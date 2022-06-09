@@ -52,38 +52,6 @@ public class TagService {
         .getResultList();
   }
 
-  public Map<UUID, List<Tag>> getMapOfTagsByEntryIdForUser(User user) {
-    List<Object[]> result = entityManager
-        .createNativeQuery(
-            "SELECT cast(e.id as varchar) as entry_id, cast(t.id as varchar) as tag_id, t.name, t.color FROM entries e" +
-                " INNER JOIN tag_entries m ON m.entry_id = e.id" +
-                " INNER JOIN tags t ON t.id = m.tag_id" +
-                " WHERE e.owner = :owner"
-        )
-        .setParameter("owner", user.getId())
-        .getResultList();
-
-    Map<UUID, List<Tag>> tagsByEntryId = new HashMap<>();
-
-    for (Object[] row : result) {
-      UUID entryId = UUID.fromString((String) row[0]);
-      tagsByEntryId.compute(entryId, (id, list) -> {
-        List<Tag> newList = (list == null) ? new ArrayList<>() : list;
-
-        Tag tag = new Tag();
-        tag.setId(UUID.fromString((String) row[1]));
-        tag.setName((String) row[2]);
-        tag.setColor((String) row[3]);
-        tag.setOwner(user);
-
-        newList.add(tag);
-        return newList;
-      });
-    }
-
-    return tagsByEntryId;
-  }
-
   public void clearTagsFromEntry(User user, JournalEntry journalEntry) {
     entityManager.createNativeQuery("DELETE FROM tag_entries e WHERE entry_id = :entryId")
         .setParameter("entryId", journalEntry.getId())

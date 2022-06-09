@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
 
 /**
  * Image entity contains rows mapping journal entry into stored image names. One Entry may
@@ -19,9 +20,11 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "images")
+@Where(clause = "deleted = false")
 @Getter
 public class Image {
   @Id
+  @Setter
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(name = "id", updatable = false, nullable = false)

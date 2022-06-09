@@ -3,6 +3,8 @@ package com.mklinga.reflekt.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
 
@@ -25,4 +27,8 @@ public class JournalEntryDto {
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss[.SSS]'Z'")
   private LocalDateTime updatedAt;
+
+  private List<TagDataDto> tags;
+
+  private Set<ImageDataDto> images;
 }
