@@ -79,6 +79,14 @@ public class StorageService {
     }
   }
 
+  /**
+   * Save (upload) a new resource into the file system.
+   *
+   * @param user Authenticated user
+   * @param file Resource to be saved
+   * @param imageId ID of the image in the database that represents the resource
+   * @return ID of the image in the database
+   */
   public UUID saveResource(User user, MultipartFile file, UUID imageId) {
     if (file.isEmpty()) {
       throw new StorageException("Trying to upload an empty file");

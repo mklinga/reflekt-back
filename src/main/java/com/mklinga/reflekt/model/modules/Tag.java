@@ -18,6 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * Tag entity can be set to one or more journal entries and can be used to group similar entries
+ * together. Tags are dynamic, and each tag must have exactly one owner.
+ */
 @Entity
 @Table(name = "module_tag_tags")
 @Getter
