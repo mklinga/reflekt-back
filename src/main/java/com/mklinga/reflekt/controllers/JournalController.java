@@ -7,6 +7,7 @@ import com.mklinga.reflekt.model.JournalEntry;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.UserPrincipal;
 import com.mklinga.reflekt.services.JournalEntryService;
+import com.mklinga.reflekt.services.MessageService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,11 +33,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/journal")
 public class JournalController {
 
-  @Autowired
   private JournalEntryService journalEntryService;
+  private ModelMapper modelMapper;
 
   @Autowired
-  private ModelMapper modelMapper;
+  public JournalController(JournalEntryService journalEntryService,
+                           ModelMapper modelMapper, MessageService messageService) {
+    this.journalEntryService = journalEntryService;
+    this.modelMapper = modelMapper;
+  }
 
   /**
    * Returns JournalListItem for all the entries.
@@ -85,11 +90,9 @@ public class JournalController {
       @AuthenticationPrincipal UserPrincipal user,
       @PathVariable UUID uuid,
       @RequestBody JournalEntryDto journalEntry) {
-    return journalEntryService
+    return ResponseEntity.of(journalEntryService
         .updateJournalEntry(user, uuid, journalEntry)
-        .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+        .map(entry -> modelMapper.map(entry, JournalEntryDto.class)));
   }
 
   /**

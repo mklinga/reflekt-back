@@ -3,31 +3,30 @@ package com.mklinga.reflekt.services;
 import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.dtos.SearchResultDto;
-import com.mklinga.reflekt.dtos.TagDataDto;
-import com.mklinga.reflekt.model.Image;
 import com.mklinga.reflekt.model.JournalEntry;
+import com.mklinga.reflekt.model.Message;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
-import com.mklinga.reflekt.model.Tag;
 import com.mklinga.reflekt.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
 /**
  * A Service to manipulate journal entries.
@@ -35,23 +34,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JournalEntryService {
 
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private final JournalEntryRepository journalEntryRepository;
-  private final TagService tagService;
+  private final MessageService messageService;
   private final ModelMapper modelMapper;
 
   /**
    * JournalEntryService deals with all the manipulation/fetching of the journal entries.
    *
    * @param journalEntryRepository Database handler for journal entries
+   * @param messageService Service to send messages
    * @param modelMapper Mapper that is used in converting between models and DTOs
-   * @param tagService Service that deals with the tags
    */
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
                              ModelMapper modelMapper,
-                             TagService tagService) {
+                             MessageService messageService) {
     this.journalEntryRepository = journalEntryRepository;
-    this.tagService = tagService;
+    this.messageService = messageService;
     this.modelMapper = modelMapper;
   }
 
@@ -67,6 +68,20 @@ public class JournalEntryService {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
     return journalEntryRepository
         .findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
+  }
+
+  private void sendUpdateMessage(JournalEntry entry) {
+    Map<String, MessageAttributeValue> attributes = new HashMap<>();
+
+    MessageAttributeValue entryId = MessageAttributeValue.builder()
+        .dataType("String")
+        .stringValue(entry.getId().toString())
+        .build();
+    attributes.put("entryId", entryId);
+    Message updateMessage = new Message("entry.update", attributes);
+
+    logger.info("Sending the update message for id " + entry.getId().toString());
+    messageService.sendMessage(updateMessage);
   }
 
   /**
@@ -162,7 +177,10 @@ public class JournalEntryService {
           journalEntry.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
           journalEntry.setOwner(user.getUser());
 
-          return journalEntryRepository.save(journalEntry);
+          JournalEntry savedEntry = journalEntryRepository.save(journalEntry);
+          sendUpdateMessage(savedEntry);
+
+          return savedEntry;
         });
   }
 
