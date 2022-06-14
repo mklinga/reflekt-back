@@ -1,7 +1,10 @@
 package com.mklinga.reflekt.services;
 
-import com.mklinga.reflekt.model.Message;
+import java.util.List;
+import software.amazon.awssdk.services.sqs.model.Message;
 
 public interface MessageService {
   void sendMessage(Message message);
+  List<Message> getNextMessages();
+  void deleteMessages(List<Message> messages);
 }

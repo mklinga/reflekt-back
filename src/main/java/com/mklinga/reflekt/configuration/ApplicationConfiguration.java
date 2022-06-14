@@ -5,11 +5,13 @@ import com.mklinga.reflekt.model.Image;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Main configuration of the application.
  */
 @Configuration
+@EnableScheduling
 public class ApplicationConfiguration {
 
   /**

@@ -4,7 +4,6 @@ import com.mklinga.reflekt.dtos.JournalEntryDto;
 import com.mklinga.reflekt.dtos.JournalListItemDto;
 import com.mklinga.reflekt.dtos.SearchResultDto;
 import com.mklinga.reflekt.model.JournalEntry;
-import com.mklinga.reflekt.model.Message;
 import com.mklinga.reflekt.model.NavigationData;
 import com.mklinga.reflekt.model.User;
 import com.mklinga.reflekt.model.UserPrincipal;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
 /**
@@ -78,7 +78,10 @@ public class JournalEntryService {
         .stringValue(entry.getId().toString())
         .build();
     attributes.put("entryId", entryId);
-    Message updateMessage = new Message("entry.update", attributes);
+    Message updateMessage = Message.builder()
+        .body("entry.update")
+        .messageAttributes(attributes)
+        .build();
 
     logger.info("Sending the update message for id " + entry.getId().toString());
     messageService.sendMessage(updateMessage);
