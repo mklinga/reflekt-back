@@ -38,22 +38,22 @@ public class JournalEntryService {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private final JournalEntryRepository journalEntryRepository;
-  private final MessageService messageService;
+  private final JournalEntryMessageService journalEntryMessageService;
   private final ModelMapper modelMapper;
 
   /**
    * JournalEntryService deals with all the manipulation/fetching of the journal entries.
    *
    * @param journalEntryRepository Database handler for journal entries
-   * @param messageService Service to send messages
+   * @param journalEntryMessageService Service that handler Journal entry - related messaging
    * @param modelMapper Mapper that is used in converting between models and DTOs
    */
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
-                             ModelMapper modelMapper,
-                             MessageService messageService) {
+                             JournalEntryMessageService journalEntryMessageService,
+                             ModelMapper modelMapper) {
     this.journalEntryRepository = journalEntryRepository;
-    this.messageService = messageService;
+    this.journalEntryMessageService = journalEntryMessageService;
     this.modelMapper = modelMapper;
   }
 
@@ -69,23 +69,6 @@ public class JournalEntryService {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
     return journalEntryRepository
         .findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
-  }
-
-  private void sendUpdateMessage(JournalEntry entry) {
-    Map<String, MessageAttributeValue> attributes = new HashMap<>();
-
-    MessageAttributeValue entryId = MessageAttributeValue.builder()
-        .dataType("String")
-        .stringValue(entry.getId().toString())
-        .build();
-    attributes.put("entryId", entryId);
-    Message updateMessage = Message.builder()
-        .body("entry.update")
-        .messageAttributes(attributes)
-        .build();
-
-    logger.info("Sending the update message for id " + entry.getId().toString());
-    messageService.sendMessage(updateMessage);
   }
 
   /**
@@ -182,7 +165,7 @@ public class JournalEntryService {
           journalEntry.setOwner(user.getUser());
 
           JournalEntry savedEntry = journalEntryRepository.save(journalEntry);
-          sendUpdateMessage(savedEntry);
+          journalEntryMessageService.sendUpdateMessage(savedEntry);
 
           return savedEntry;
         });

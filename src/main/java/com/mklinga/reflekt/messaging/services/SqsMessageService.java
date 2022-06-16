@@ -61,6 +61,7 @@ public class SqsMessageService implements MessageService {
       ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder()
           .queueUrl(getQueueUrl(sqsClient))
           .maxNumberOfMessages(amount)
+          .messageAttributeNames(List.of("userId", "entryId"))
           .build();
 
       return sqsClient.receiveMessage(receiveMessageRequest).messages();

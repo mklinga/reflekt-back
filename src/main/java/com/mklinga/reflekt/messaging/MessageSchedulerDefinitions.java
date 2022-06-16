@@ -1,6 +1,8 @@
 package com.mklinga.reflekt.messaging;
 
+import com.mklinga.reflekt.analytics.services.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -8,11 +10,17 @@ import org.springframework.stereotype.Component;
 public class MessageSchedulerDefinitions {
   private final MessageConsumer messageConsumer;
 
-  private final MessageHandler entrySavedMessageHandler = new EntrySavedMessageHandler();
+  private final AnalyticsService analyticsService;
+  private final MessageHandler entrySavedMessageHandler;
 
   @Autowired
-  public MessageSchedulerDefinitions(MessageConsumer messageConsumer) {
+  public MessageSchedulerDefinitions(
+      MessageConsumer messageConsumer,
+      AnalyticsService analyticsService,
+      @Qualifier("EntrySavedMessageHandler") MessageHandler entrySavedMessageHandler) {
     this.messageConsumer = messageConsumer;
+    this.analyticsService = analyticsService;
+    this.entrySavedMessageHandler = entrySavedMessageHandler;
   }
 
   @Scheduled(cron = "0 */1 * * * *")
