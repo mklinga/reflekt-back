@@ -1,4 +1,4 @@
-package com.mklinga.reflekt.controllers;
+package com.mklinga.reflekt.controllers.analytics;
 
 import com.mklinga.reflekt.dtos.DashboardDto;
 import com.mklinga.reflekt.model.UserPrincipal;

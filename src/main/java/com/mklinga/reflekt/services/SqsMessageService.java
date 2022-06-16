@@ -53,13 +53,13 @@ public class SqsMessageService implements MessageService {
   }
 
   @Override
-  public List<Message> getNextMessages() {
+  public List<Message> getNextMessages(Integer amount) {
     SqsClient sqsClient = getClient();
 
     try {
       ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder()
           .queueUrl(getQueueUrl(sqsClient))
-          .maxNumberOfMessages(5)
+          .maxNumberOfMessages(amount)
           .build();
 
       return sqsClient.receiveMessage(receiveMessageRequest).messages();
