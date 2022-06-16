@@ -1,7 +1,7 @@
 package com.mklinga.reflekt.messaging.services;
 
-import com.mklinga.reflekt.messaging.services.MessageService;
 import java.util.List;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,24 +27,27 @@ public class SqsMessageService implements MessageService {
         .build();
   }
 
-  private String getQueueUrl(SqsClient sqsClient) {
+  private String getQueueUrl(SqsClient sqsClient, String queueName) {
     GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
-        .queueName("ReflektDevQueue")
+        .queueName(queueName)
         .build();
 
     return sqsClient.getQueueUrl(getQueueUrlRequest).queueUrl();
   }
 
   @Override
-  public void sendMessage(Message message) {
+  public void sendMessage(String queueName, Message message, String messageGroupId) {
     SqsClient sqsClient = getClient();
 
     try {
+      UUID deduplicationId = UUID.randomUUID();
 
       SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
+          .messageDeduplicationId(deduplicationId.toString())
+          .messageGroupId(messageGroupId)
           .messageBody(message.body())
           .messageAttributes(message.messageAttributes())
-          .queueUrl(getQueueUrl(sqsClient))
+          .queueUrl(getQueueUrl(sqsClient, queueName))
           .build();
 
       sqsClient.sendMessage(sendMessageRequest);
@@ -54,12 +57,12 @@ public class SqsMessageService implements MessageService {
   }
 
   @Override
-  public List<Message> getNextMessages(Integer amount) {
+  public List<Message> getNextMessages(String queueName, Integer amount) {
     SqsClient sqsClient = getClient();
 
     try {
       ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder()
-          .queueUrl(getQueueUrl(sqsClient))
+          .queueUrl(getQueueUrl(sqsClient, queueName))
           .maxNumberOfMessages(amount)
           .messageAttributeNames(List.of("userId", "entryId"))
           .build();
@@ -74,12 +77,12 @@ public class SqsMessageService implements MessageService {
 
 
   @Override
-  public void deleteMessages(List<Message> messages) {
+  public void deleteMessages(String queueName, List<Message> messages) {
     SqsClient sqsClient = getClient();
     try {
       for (Message message : messages) {
         DeleteMessageRequest deleteMessageRequest = DeleteMessageRequest.builder()
-            .queueUrl(getQueueUrl(sqsClient))
+            .queueUrl(getQueueUrl(sqsClient, queueName))
             .receiptHandle(message.receiptHandle())
             .build();
         sqsClient.deleteMessage(deleteMessageRequest);

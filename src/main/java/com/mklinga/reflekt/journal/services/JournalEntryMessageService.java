@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
@@ -18,6 +19,9 @@ public class JournalEntryMessageService {
   private final MessageService messageService;
 
   private final String ENTRY_UPDATE_MESSAGE = "entry.update";
+
+  @Value("${messaging.queues.entryUpdate}")
+  private String entryUpdateQueue;
 
   @Autowired
   public JournalEntryMessageService(MessageService messageService) {
@@ -45,7 +49,11 @@ public class JournalEntryMessageService {
     attributes.put("entryId", createStringAttribute(entry.getId().toString()));
     attributes.put("userId", createStringAttribute(entry.getOwner().getId().toString()));
 
-    messageService.sendMessage(createMessage(ENTRY_UPDATE_MESSAGE, attributes));
+    String messageGroupId = Integer.toString(entry.getOwner().getId());
+    messageService.sendMessage(
+        entryUpdateQueue,
+        createMessage(ENTRY_UPDATE_MESSAGE, attributes),
+        messageGroupId);
   }
 
 }

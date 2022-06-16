@@ -21,9 +21,9 @@ public class MessageConsumer {
   }
 
 
-  public void consumeMessages(MessageHandler handler) {
-    logger.info("Checking for new Messages in the queue");
-    List<Message> messages = messageService.getNextMessages(MAX_MESSAGES);
+  public void consumeMessages(String queueName, MessageHandler handler) {
+    logger.info("Checking for new Messages in the queue " + queueName);
+    List<Message> messages = messageService.getNextMessages(queueName, MAX_MESSAGES);
     if (messages.isEmpty()) {
       logger.debug("No messages to consume, try sending some :)");
       return;
@@ -32,12 +32,12 @@ public class MessageConsumer {
     logger.debug("Found " + messages.size() + " new messages");
     messages.stream().forEach(handler::handle);
 
-    messageService.deleteMessages(messages);
+    messageService.deleteMessages(queueName, messages);
     logger.info("Message consumer finished.");
 
     /* If we receive maximum amount of messages, we check immediately if there is more */
     if (messages.size() == MAX_MESSAGES) {
-      consumeMessages(handler);
+      consumeMessages(queueName, handler);
     }
   }
 }
