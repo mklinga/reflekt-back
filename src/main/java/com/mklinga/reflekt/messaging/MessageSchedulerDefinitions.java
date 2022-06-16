@@ -14,7 +14,7 @@ public class MessageSchedulerDefinitions {
   private final AnalyticsService analyticsService;
   private final MessageHandler entrySavedMessageHandler;
 
-  @Value("${messaging.queues.entryUpdate}")
+  @Value("${messaging.entryUpdate.queue}")
   private String entryUpdateQueue;
 
   @Autowired
@@ -27,7 +27,7 @@ public class MessageSchedulerDefinitions {
     this.entrySavedMessageHandler = entrySavedMessageHandler;
   }
 
-  @Scheduled(cron = "0 */1 * * * *")
+  @Scheduled(cron = "0 */15 * * * *")
   public void handleEntryUpdatedMessages() {
     messageConsumer.consumeMessages(entryUpdateQueue, entrySavedMessageHandler);
   }

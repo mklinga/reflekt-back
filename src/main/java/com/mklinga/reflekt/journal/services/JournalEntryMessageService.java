@@ -20,7 +20,7 @@ public class JournalEntryMessageService {
 
   private final String ENTRY_UPDATE_MESSAGE = "entry.update";
 
-  @Value("${messaging.queues.entryUpdate}")
+  @Value("${messaging.entryUpdate.queue}")
   private String entryUpdateQueue;
 
   @Autowired
