@@ -27,7 +27,7 @@ public class MessageSchedulerDefinitions {
     this.entrySavedMessageHandler = entrySavedMessageHandler;
   }
 
-  @Scheduled(cron = "0 */15 * * * *")
+  @Scheduled(cron = "0 0 */3 * * *")
   public void handleEntryUpdatedMessages() {
     messageConsumer.consumeMessages(entryUpdateQueue, entrySavedMessageHandler);
   }
