@@ -16,9 +16,13 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 @NamedQuery(
-    name="lockAnalyticsJournalUser",
+    name="GetJournalUserAnalyticsByUserWithLock",
     query="SELECT u FROM JournalUserAnalytics u WHERE u.user = :user",
     lockMode = LockModeType.PESSIMISTIC_WRITE)
+@NamedQuery(
+    name="GetJournalUserAnalyticsByUser",
+    query="SELECT u FROM JournalUserAnalytics u WHERE u.user = :user"
+)
 @Entity
 @Table(name = "analytics_journal_user")
 public class JournalUserAnalytics {

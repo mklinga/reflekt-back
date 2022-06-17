@@ -219,4 +219,26 @@ public class JournalEntryService {
 
     return Optional.empty();
   }
+
+  /**
+   * Get entry count from the database for the specific user. The COUNT() function in postgres
+   * returns Long, but we will just cast it as an Integer for our purposes. (We will cross the
+   * bridge where the user has more than $MAX_INTVALUE worth of entries when it's necessary...)
+   *
+   * @param user The authenticated user
+   * @return Number of distinct entries in the db
+   */
+  public Integer getEntryCountByUser(User user) {
+    try {
+      Long count = entityManager
+          .createNamedQuery("GetJournalEntryCount", Long.class)
+          .setParameter("owner", user)
+          .getSingleResult();
+
+      return Math.toIntExact(count);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return 0;
+    }
+  }
 }
