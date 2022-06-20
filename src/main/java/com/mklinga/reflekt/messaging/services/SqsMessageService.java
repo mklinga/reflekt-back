@@ -20,11 +20,24 @@ public class SqsMessageService implements MessageService {
 
   Logger logger = LoggerFactory.getLogger(this.getClass());
 
+  private SqsClient sqsClient;
+
   private SqsClient getClient() {
-    return SqsClient.builder()
+    if (this.sqsClient != null) {
+      return this.sqsClient;
+    }
+
+    SqsClient client = SqsClient.builder()
         .region(Region.EU_NORTH_1)
         .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
         .build();
+
+    setClient(client);
+    return client;
+  }
+
+  public void setClient(SqsClient sqsClient) {
+    this.sqsClient = sqsClient;
   }
 
   private String getQueueUrl(SqsClient sqsClient, String queueName) {
