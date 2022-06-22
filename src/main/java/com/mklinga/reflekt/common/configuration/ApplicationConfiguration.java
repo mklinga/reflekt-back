@@ -21,14 +21,6 @@ public class ApplicationConfiguration {
    */
   @Bean
   public ModelMapper modelMapper() {
-    ModelMapper modelMapper = new ModelMapper();
-
-    /* Custom field mappings */
-
-    modelMapper
-        .typeMap(Image.class, ImageDataDto.class)
-        .addMapping(Image::getImageName, ImageDataDto::setName);
-
-    return modelMapper;
+    return ModelMapperConfiguration.getModelMapper();
   }
 }
