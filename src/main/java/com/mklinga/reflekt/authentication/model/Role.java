@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name = "roles")
 @Setter
 @Getter
+@EqualsAndHashCode
 public class Role implements GrantedAuthority {
   @Id
   @GeneratedValue

@@ -1,8 +1,11 @@
 package com.mklinga.reflekt.journal.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,26 +18,31 @@ import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.common.ApplicationTestConfiguration;
 import com.mklinga.reflekt.common.TestAuthentication;
+import com.mklinga.reflekt.journal.dtos.TagDataDto;
 import com.mklinga.reflekt.journal.model.Tag;
 import com.mklinga.reflekt.journal.services.TagService;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.hamcrest.text.MatchesPattern;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 @WebMvcTest(TagController.class)
 @Import(ApplicationTestConfiguration.class)
@@ -86,7 +94,69 @@ class TagControllerTest {
                     {"id":"19ce638b-411e-4d3a-b2f9-0bdcd6f3d61c","name":"TAG 2","color":"#000001"}
                   ]
                   """)
-              );
+          );
+    }
+  }
+
+  @Nested
+  @DisplayName("addNewTag")
+  public class AddNewTagTest {
+
+    private static final String newTagName = "New Tag";
+    private static final String newTagColor = "#123456";
+    private static final UUID newTagId = UUID.fromString("8133ec81-ad0e-41b5-9bbd-1afeb5bd7ddf");
+
+    private static final String postContentBody = "{\"name\":\"%s\",\"color\":\"%s\"}"
+        .formatted(newTagName, newTagColor);
+
+    private Tag createNewTag() {
+      Tag newTag = new Tag();
+      newTag.setId(newTagId);
+      newTag.setName(newTagName);
+      newTag.setColor(newTagColor);
+
+      return newTag;
+    }
+
+    @BeforeEach
+    public void setup() {
+      Tag newTag = createNewTag();
+      when(tagService.addNewTag(any(User.class), any(TagDataDto.class))).thenReturn(newTag);
+    }
+
+    @Test
+    @WithUserDetails(TestAuthentication.testUserName)
+    public void addNewTagReturnsCorrectJson() throws Exception {
+
+      String expectedResponseBody = "{\"id\":\"%s\",\"name\":\"%s\",\"color\":\"%s\"}"
+          .formatted(newTagId.toString(), newTagName, newTagColor);
+
+      mockMvc
+          .perform(post("/tags")
+              .content(postContentBody)
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(content().json(expectedResponseBody));
+    }
+
+    @Test
+    @WithUserDetails(TestAuthentication.testUserName)
+    public void addNewTagParsesUserAndTagFromRequest() throws Exception {
+      mockMvc
+          .perform(post("/tags")
+              .content(postContentBody)
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk());
+
+      ArgumentCaptor<User> userArgument = ArgumentCaptor.forClass(User.class);
+      ArgumentCaptor<TagDataDto> tagDataArgument = ArgumentCaptor.forClass(TagDataDto.class);
+      verify(tagService).addNewTag(userArgument.capture(), tagDataArgument.capture());
+
+      assertEquals(TestAuthentication.testUser(), userArgument.getValue());
+
+      TagDataDto requestBody = tagDataArgument.getValue();
+      assertEquals(newTagName, requestBody.getName());
+      assertEquals(newTagColor, requestBody.getColor());
     }
   }
 }

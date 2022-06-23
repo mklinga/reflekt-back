@@ -15,6 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,7 @@ import lombok.Setter;
 @Table(name = "users")
 @Setter
 @Getter
+@EqualsAndHashCode
 public class User {
   @Id
   @GeneratedValue(generator = "users_id_gen")
