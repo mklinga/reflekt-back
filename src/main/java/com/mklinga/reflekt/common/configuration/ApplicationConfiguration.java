@@ -1,7 +1,5 @@
 package com.mklinga.reflekt.common.configuration;
 
-import com.mklinga.reflekt.journal.dtos.ImageDataDto;
-import com.mklinga.reflekt.journal.model.Image;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,7 @@
 package com.mklinga.reflekt.journal.services;
 
-import com.mklinga.reflekt.journal.exceptions.StorageException;
 import com.mklinga.reflekt.authentication.model.User;
+import com.mklinga.reflekt.journal.exceptions.StorageException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -60,7 +60,7 @@ public class StorageService {
    * the deleted - directory for the specific user. This is complemented by the db operation where
    * the "deleted" flag of the image will be set to TRUE.
    *
-   * @param user Logged in user
+   * @param user    Logged in user
    * @param imageId id of the image that is being deleted
    * @return boolean based on the success of the move operation
    */
@@ -82,12 +82,11 @@ public class StorageService {
   /**
    * Save (upload) a new resource into the file system.
    *
-   * @param user Authenticated user
-   * @param file Resource to be saved
+   * @param user    Authenticated user
+   * @param file    Resource to be saved
    * @param imageId ID of the image in the database that represents the resource
-   * @return ID of the image in the database
    */
-  public UUID saveResource(User user, MultipartFile file, UUID imageId) {
+  public void saveResource(User user, MultipartFile file, UUID imageId) {
     if (file.isEmpty()) {
       throw new StorageException("Trying to upload an empty file");
     }
@@ -106,8 +105,6 @@ public class StorageService {
       try (InputStream inputStream = file.getInputStream()) {
         Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
       }
-
-      return imageId;
     } catch (IOException exception) {
       throw new StorageException("Saving the file to file system failed");
     }

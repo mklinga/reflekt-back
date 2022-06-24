@@ -1,7 +1,7 @@
 package com.mklinga.reflekt.journal.controllers;
 
-import com.mklinga.reflekt.journal.dtos.TagDataDto;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.journal.dtos.TagDataDto;
 import com.mklinga.reflekt.journal.model.Tag;
 import com.mklinga.reflekt.journal.services.TagService;
 import java.util.List;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Handle the endpoints for viewing and creating new tags.
+ */
 @RestController
 @RequestMapping("/tags")
 public class TagController {
@@ -28,6 +31,12 @@ public class TagController {
     this.modelMapper = modelMapper;
   }
 
+  /**
+   * Get all the tags for the authenticated user from the database.
+   *
+   * @param userPrincipal Authenticated user
+   * @return List of tags
+   */
   @GetMapping("/")
   public List<TagDataDto> getAllTags(@AuthenticationPrincipal UserPrincipal userPrincipal) {
     return tagService.getAllTagsForOwner(userPrincipal.getUser()).stream()

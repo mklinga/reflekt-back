@@ -1,13 +1,12 @@
 package com.mklinga.reflekt.journal.controllers;
 
+import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.common.model.Navigable;
+import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
 import com.mklinga.reflekt.journal.dtos.JournalListItemDto;
-import com.mklinga.reflekt.common.model.Navigable;
 import com.mklinga.reflekt.journal.model.JournalEntry;
-import com.mklinga.reflekt.common.model.NavigationData;
-import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.journal.services.JournalEntryService;
-import com.mklinga.reflekt.messaging.services.MessageService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,12 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/journal")
 public class JournalController {
 
-  private JournalEntryService journalEntryService;
-  private ModelMapper modelMapper;
+  private final JournalEntryService journalEntryService;
+  private final ModelMapper modelMapper;
 
   @Autowired
-  public JournalController(JournalEntryService journalEntryService,
-                           ModelMapper modelMapper, MessageService messageService) {
+  public JournalController(JournalEntryService journalEntryService, ModelMapper modelMapper) {
     this.journalEntryService = journalEntryService;
     this.modelMapper = modelMapper;
   }
@@ -67,8 +65,8 @@ public class JournalController {
       @AuthenticationPrincipal UserPrincipal user,
       @PathVariable UUID uuid) {
     Optional<JournalEntryDto> data = journalEntryService
-            .getJournalEntry(user, uuid)
-            .map(entry -> modelMapper.map(entry, JournalEntryDto.class));
+        .getJournalEntry(user, uuid)
+        .map(entry -> modelMapper.map(entry, JournalEntryDto.class));
 
     return data.map(journalEntryDto -> {
       NavigationData navigationData = journalEntryService

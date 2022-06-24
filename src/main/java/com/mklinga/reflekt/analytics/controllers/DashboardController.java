@@ -1,8 +1,8 @@
 package com.mklinga.reflekt.analytics.controllers;
 
 import com.mklinga.reflekt.analytics.dtos.DashboardDto;
-import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.analytics.services.DashboardService;
+import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * DashboardController handles the needs of the Dashboard view in the application.
+ */
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
 
-  private DashboardService dashboardService;
+  private final DashboardService dashboardService;
 
   @Autowired
   public DashboardController(DashboardService dashboardService) {
@@ -26,6 +29,6 @@ public class DashboardController {
       @AuthenticationPrincipal UserPrincipal userPrincipal
   ) {
 
-   return ResponseEntity.ok(dashboardService.getDashboardData(userPrincipal.getUser()));
+    return ResponseEntity.ok(dashboardService.getDashboardData(userPrincipal.getUser()));
   }
 }

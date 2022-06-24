@@ -2,12 +2,12 @@ package com.mklinga.reflekt.journal.controllers;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-import com.mklinga.reflekt.journal.dtos.ImageDataDto;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.journal.dtos.ImageDataDto;
 import com.mklinga.reflekt.journal.model.Image;
+import com.mklinga.reflekt.journal.services.ImageService;
 import com.mklinga.reflekt.journal.services.JournalEntryService;
 import com.mklinga.reflekt.journal.services.StorageService;
-import com.mklinga.reflekt.journal.services.ImageService;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +37,10 @@ public class ImageController {
   /**
    * Main controller for downloading/uploading images.
    *
-   * @param storageService Service that handles physical storage
-   * @param imageService Service that handles database layer
+   * @param storageService      Service that handles physical storage
+   * @param imageService        Service that handles database layer
    * @param journalEntryService Service that deals with the journal entries
-   * @param modelMapper Modelmapper used to convert between models and DTOs
+   * @param modelMapper         Modelmapper used to convert between models and DTOs
    */
   @Autowired
   public ImageController(StorageService storageService, ImageService imageService,
@@ -56,7 +56,7 @@ public class ImageController {
    * User can only fetch images he has uploaded himself (userId is used as directory in the disk).
    *
    * @param userPrincipal Authenticated user
-   * @param imageId ID of the requested image
+   * @param imageId       ID of the requested image
    * @return The image data if found and accessible, 404 if not.
    */
   @GetMapping("/{imageId}")
@@ -78,7 +78,7 @@ public class ImageController {
    * existing image into the "removed" directory in the file system.
    *
    * @param userPrincipal Logged-in user
-   * @param imageId ID of the image
+   * @param imageId       ID of the image
    * @return Deleted image or not found
    */
   @DeleteMapping("/{imageId}")
@@ -101,8 +101,8 @@ public class ImageController {
    * Handler method that takes care of uploading new images.
    *
    * @param userPrincipal The authenticated user
-   * @param file (image)file that is being uploaded
-   * @param entryId ID of the journal entry, in which this image is related to
+   * @param file          (image)file that is being uploaded
+   * @param entryId       ID of the journal entry, in which this image is related to
    * @return Meta information about the newly posted image
    */
   @PostMapping("")
@@ -112,9 +112,9 @@ public class ImageController {
       @RequestParam("journalEntry") UUID entryId) {
 
     /* TODO
-      * error handling:
-      * remove image from database if saving it fails
-      * send a message to the client if something fails
+     * error handling:
+     * remove image from database if saving it fails
+     * send a message to the client if something fails
      */
     return ResponseEntity.of(
         journalEntryService

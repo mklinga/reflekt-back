@@ -11,6 +11,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * JournalEntryAnalytics handles all the analytics for specific journal entry in the database.
+ */
 @Entity
 @Table(name = "analytics_journal_entry")
 public class JournalEntryAnalytics {

@@ -1,19 +1,16 @@
 package com.mklinga.reflekt.journal.services;
 
+import com.mklinga.reflekt.authentication.model.User;
+import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
 import com.mklinga.reflekt.journal.dtos.JournalListItemDto;
 import com.mklinga.reflekt.journal.dtos.SearchResultDto;
 import com.mklinga.reflekt.journal.model.JournalEntry;
-import com.mklinga.reflekt.common.model.NavigationData;
-import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.journal.repositories.JournalEntryRepository;
-import com.mklinga.reflekt.messaging.services.MessageService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.sqs.model.Message;
-import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
 /**
  * A Service to manipulate journal entries.
@@ -44,9 +39,9 @@ public class JournalEntryService {
   /**
    * JournalEntryService deals with all the manipulation/fetching of the journal entries.
    *
-   * @param journalEntryRepository Database handler for journal entries
+   * @param journalEntryRepository     Database handler for journal entries
    * @param journalEntryMessageService Service that handler Journal entry - related messaging
-   * @param modelMapper Mapper that is used in converting between models and DTOs
+   * @param modelMapper                Mapper that is used in converting between models and DTOs
    */
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
@@ -76,7 +71,7 @@ public class JournalEntryService {
    * main /journal view of the application and doesn't need all the data from the items (most
    * notably, the actual entry text is omitted).
    *
-   * @param user Authenticated user
+   * @param user   Authenticated user
    * @param search Possible search text
    * @return List of all items, if search is null, or a filtered list if search is enabled
    */
@@ -105,7 +100,7 @@ public class JournalEntryService {
   /**
    * Returns the navigation data (next/previous) to the JournalEntry.
    *
-   * @param user Authenticated user
+   * @param user    Authenticated user
    * @param entryId ID of the journal entry
    * @return NavigationData
    */
@@ -190,9 +185,9 @@ public class JournalEntryService {
    * Returns a list of journal entries formatted as SearchResultDto based on the query text or a
    * tag name.
    *
-   * @param user Authenticated user
+   * @param user  Authenticated user
    * @param query Query text (can be null)
-   * @param tag Tag name (can be null)
+   * @param tag   Tag name (can be null)
    * @return List of matching search results
    */
   @Transactional(readOnly = true)
@@ -208,9 +203,9 @@ public class JournalEntryService {
           .findAllByOwnerAndEntryContainingIgnoreCase(user, query, sort);
       return Optional.of(
           entries
-          .stream()
-          .map(entry -> modelMapper.map(entry, SearchResultDto.class))
-          .collect(Collectors.toList()));
+              .stream()
+              .map(entry -> modelMapper.map(entry, SearchResultDto.class))
+              .collect(Collectors.toList()));
     }
 
     if (tag != null) {

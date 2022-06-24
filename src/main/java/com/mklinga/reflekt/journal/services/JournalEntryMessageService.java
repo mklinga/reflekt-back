@@ -12,13 +12,16 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 
+/**
+ * Handling of the messages for all the journal entry - related topics.
+ */
 @Service
 public class JournalEntryMessageService {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
   private final MessageService messageService;
 
-  private final String ENTRY_UPDATE_MESSAGE = "entry.update";
+  private final String entryUpdateMessage = "entry.update";
 
   @Value("${messaging.entryUpdate.queue}")
   private String entryUpdateQueue;
@@ -35,13 +38,19 @@ public class JournalEntryMessageService {
         .build();
   }
 
-  private Message createMessage(String body, Map<String, MessageAttributeValue> attributes) {
+  private Message createUpdateMessage(Map<String, MessageAttributeValue> attributes) {
     return Message.builder()
-        .body(body)
+        .body(entryUpdateMessage)
         .messageAttributes(attributes)
         .build();
   }
 
+  /**
+   * Sends the update message (this.entryUpdateMessage) for specific journal entry into the
+   * messageservice. The messages will be grouped by the userId of the owner for entry.
+   *
+   * @param entry JournalEntry that has been updated
+   */
   public void sendUpdateMessage(JournalEntry entry) {
     logger.info("Sending the update message for id " + entry.getId().toString());
     Map<String, MessageAttributeValue> attributes = new HashMap<>();
@@ -50,10 +59,7 @@ public class JournalEntryMessageService {
     attributes.put("userId", createStringAttribute(entry.getOwner().getId().toString()));
 
     String messageGroupId = Integer.toString(entry.getOwner().getId());
-    messageService.sendMessage(
-        entryUpdateQueue,
-        createMessage(ENTRY_UPDATE_MESSAGE, attributes),
-        messageGroupId);
+    messageService.sendMessage(entryUpdateQueue, createUpdateMessage(attributes), messageGroupId);
   }
 
 }

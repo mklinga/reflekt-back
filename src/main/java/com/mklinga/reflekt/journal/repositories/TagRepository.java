@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
+/**
+ * Repository interface for the Tags.
+ */
 public interface TagRepository extends CrudRepository<Tag, UUID> {
   List<Tag> findByOwner(User user);
 }

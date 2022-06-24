@@ -15,6 +15,11 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SqsException;
 
+/**
+ * SQS Implementation for the MessageService used in our application. The AWS credentials must be
+ * provided through enviroment variables for the authentication. Note that the current
+ * implementation is hard coded for the queues to be located in the EU_NORTH_1 region.
+ */
 @Service
 public class SqsMessageService implements MessageService {
 
@@ -77,6 +82,7 @@ public class SqsMessageService implements MessageService {
       ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder()
           .queueUrl(getQueueUrl(sqsClient, queueName))
           .maxNumberOfMessages(amount)
+          // TODO: This list should be given as a method argument
           .messageAttributeNames(List.of("userId", "entryId"))
           .build();
 
