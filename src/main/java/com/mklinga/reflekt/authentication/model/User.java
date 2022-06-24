@@ -36,7 +36,7 @@ public class User {
   @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
   private LocalDateTime createdAt;
 
-  @Column(name = "last_login", nullable = true, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+  @Column(name = "last_login", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
   private LocalDateTime lastLogin;
 
   @Column(name = "username", nullable = false, columnDefinition = "VARCHAR(50)")

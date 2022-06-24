@@ -80,14 +80,10 @@ public class JournalEntryService {
     List<JournalEntry> entries = (search == null)
         ? getAllJournalEntries(user)
         : getFilteredJournalEntries(user, search);
-    List<UUID> entriesWithImages = entityManager
-        .createNamedQuery("JournalEntry_GetEntriesWithImages")
-        .setParameter("owner", user.getUser())
-        .getResultList();
 
     return entries.stream().map(entry -> {
       JournalListItemDto listItem = modelMapper.map(entry, JournalListItemDto.class);
-      listItem.setHasImages(entriesWithImages.contains(listItem.getId()));
+      listItem.setHasImages(!entry.getImages().isEmpty());
 
       return listItem;
     }).collect(Collectors.toList());

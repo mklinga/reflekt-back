@@ -1,13 +1,6 @@
 package com.mklinga.reflekt.authentication.dtos;
 
-import lombok.Data;
-import lombok.NonNull;
-
 /**
- * DTO for greeting the client.
+ * Simple greeting the client that tells we're successfully logged in.
  */
-@Data
-public class HelloDto {
-  @NonNull
-  private String hello;
-}
+public record HelloDto(String hello) {}

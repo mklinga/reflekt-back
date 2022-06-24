@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-  private String serverName = "Friendly Java server";
 
   /**
    * This endpoint is called from the frontend to verify the user is authenticated.
@@ -28,6 +27,7 @@ public class LoginController {
       return ResponseEntity.status(401).build();
     }
 
+    String serverName = "Friendly Java server";
     HelloDto hello = new HelloDto(serverName + " - Logged in as " + user.getUsername());
     return ResponseEntity.ok(hello);
   }

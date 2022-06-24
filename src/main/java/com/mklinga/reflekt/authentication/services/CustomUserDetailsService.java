@@ -16,12 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private PasswordEncoder passwordEncoder;
-  private UserService userService;
+  private final UserService userService;
 
   @Autowired
   CustomUserDetailsService(PasswordEncoder passwordEncoder, UserService userService) {
-    this.passwordEncoder = passwordEncoder;
     this.userService = userService;
   }
 

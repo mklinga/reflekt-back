@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-  Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

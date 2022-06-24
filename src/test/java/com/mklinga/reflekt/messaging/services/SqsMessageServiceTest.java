@@ -1,20 +1,19 @@
 package com.mklinga.reflekt.messaging.services;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
@@ -26,7 +25,6 @@ import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.eventstream.MessageBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class SqsMessageServiceTest {
@@ -119,7 +117,8 @@ class SqsMessageServiceTest {
     );
     sqsMessageService.deleteMessages(this.queueName, messages);
 
-    ArgumentCaptor<DeleteMessageRequest> request = ArgumentCaptor.forClass(DeleteMessageRequest.class);
+    ArgumentCaptor<DeleteMessageRequest> request =
+        ArgumentCaptor.forClass(DeleteMessageRequest.class);
     Mockito.verify(client, Mockito.times(2)).deleteMessage(request.capture());
 
     DeleteMessageRequest actualRequest1 = request.getAllValues().get(0);

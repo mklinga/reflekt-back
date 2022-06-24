@@ -26,11 +26,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
-  @Autowired
   LoginSuccessHandler loginSuccessHandler;
+  LoginFailureHandler loginFailureHandler;
 
   @Autowired
-  LoginFailureHandler loginFailureHandler;
+  public SecurityConfiguration(LoginSuccessHandler loginSuccessHandler,
+                               LoginFailureHandler loginFailureHandler) {
+    this.loginSuccessHandler = loginSuccessHandler;
+    this.loginFailureHandler = loginFailureHandler;
+  }
 
   @Override
   protected void configure(HttpSecurity security) throws Exception {

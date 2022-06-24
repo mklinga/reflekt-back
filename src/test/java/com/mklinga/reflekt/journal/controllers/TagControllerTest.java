@@ -2,20 +2,13 @@ package com.mklinga.reflekt.journal.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mklinga.reflekt.authentication.configuration.LoginFailureHandler;
-import com.mklinga.reflekt.authentication.configuration.LoginSuccessHandler;
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.common.ApplicationTestConfiguration;
 import com.mklinga.reflekt.common.TestAuthentication;
 import com.mklinga.reflekt.journal.dtos.TagDataDto;
@@ -23,8 +16,6 @@ import com.mklinga.reflekt.journal.model.Tag;
 import com.mklinga.reflekt.journal.services.TagService;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
-import org.hamcrest.text.MatchesPattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,17 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 @WebMvcTest(TagController.class)
 @Import(ApplicationTestConfiguration.class)

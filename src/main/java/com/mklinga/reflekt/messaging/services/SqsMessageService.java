@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.sqs.model.SqsException;
 @Service
 public class SqsMessageService implements MessageService {
 
-  Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private SqsClient sqsClient;
 

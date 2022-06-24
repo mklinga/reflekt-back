@@ -91,6 +91,10 @@ public class StorageService {
       throw new StorageException("Trying to upload an empty file");
     }
 
+    if (file.getOriginalFilename() == null) {
+      throw new StorageException("You can't send a file without name, come on.");
+    }
+
     if (!file.getOriginalFilename().toLowerCase().endsWith(allowedFileExtension)) {
       throw new StorageException("Only JPEG files are supported for now...");
     }

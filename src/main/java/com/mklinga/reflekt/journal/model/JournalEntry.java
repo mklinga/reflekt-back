@@ -31,11 +31,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @Getter
 @NamedQuery(
-    name = "JournalEntry_GetEntriesWithImages",
-    query = "SELECT e.id FROM JournalEntry e"
-        + " INNER JOIN Image m ON m.journalEntry = e"
-        + " WHERE e.owner = :owner AND m.deleted = false")
-@NamedQuery(
     name = "GetJournalEntryCount",
     query = "SELECT COUNT(*) FROM JournalEntry e WHERE e.owner = :owner"
 )

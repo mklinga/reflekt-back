@@ -1,7 +1,5 @@
 package com.mklinga.reflekt.common;
 
-import static com.mklinga.reflekt.common.TestAuthentication.testUser;
-
 import com.mklinga.reflekt.authentication.configuration.LoginFailureHandler;
 import com.mklinga.reflekt.authentication.configuration.LoginSuccessHandler;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
