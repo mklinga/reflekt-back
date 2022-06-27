@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.messaging;
 
 import com.mklinga.reflekt.analytics.services.AnalyticsService;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,15 @@ public class EntrySavedMessageHandler implements MessageHandler {
   }
 
   @Override
-  public void handle(Message message) {
-    Integer userId = Integer.parseInt(
-        message.messageAttributes().get("userId").stringValue());
+  public Callable<Void> getHandler(Message message) {
+    return () -> {
+      logger.debug("Invoking handler for {}", message.messageId());
+      Integer userId = Integer.parseInt(
+          message.messageAttributes().get("userId").stringValue());
 
-    analyticsService.increaseUserUpdateCount(userId);
-
+      analyticsService.increaseUserUpdateCount(userId);
+      logger.debug("Handler done for {}", message.messageId());
+      return null;
+    };
   }
 }

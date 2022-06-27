@@ -2,7 +2,6 @@ package com.mklinga.reflekt.messaging;
 
 import com.mklinga.reflekt.messaging.services.MessageService;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -32,49 +31,49 @@ public class MessageConsumer {
 
   /**
    * Fetches $maxMessages from the $queueName (or less, if not enough messages available) and
-   * loops over them, calling the given handler for each.
+   * processes them concurrently in separate threads, based on the consumerThreadCount variable.
+   * If the messageService returns the maximum amount of the messages, we will immediately try
+   * to fetch and process the next patch, until the messageservice returns less than the maximum
+   * amount. TODO: This can end up badly, if the processing cannot succeed for some reason, we
+   * should have some sort of a release mechanism to make sure we're not in an infinite loop...
    *
    * @param queueName   The name of the queue where we fetch the items
    * @param handler     Handler to be called for each item
    * @param maxMessages Amount of items we are trying to fetch
    */
   public void consumeMessages(String queueName, MessageHandler handler, Integer maxMessages) {
-    ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors
+    ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors
         .newFixedThreadPool(consumerThreadCount);
 
     boolean consumerDone = false;
-
     while (!consumerDone) {
       List<Message> messages = messageService.getNextMessages(queueName, maxMessages);
+      logger.debug("Found {} new messages in the queue", messages.size());
+
       if (messages.isEmpty()) {
-        logger.debug("No messages in the messageService for " + queueName);
-        return;
+        break;
       }
 
-      logger.debug("Found " + messages.size() + " new messages, consuming...");
       try {
-        pool.invokeAll(
-            messages.stream()
-                .map(message -> (Callable<Void>) () -> {
-                  logger.debug("Invoking handler for {}", message.messageId());
-                  handler.handle(message);
-                  logger.debug("Handler done for {}", message.messageId());
-                  return null;
-                })
-                .collect(Collectors.toList()));
+        threadPoolExecutor
+            .invokeAll(messages.stream().map(handler::getHandler).collect(Collectors.toList()));
 
         messageService.deleteMessages(queueName, messages);
-        logger.info("Message consumer finished.");
+        logger.info("Message consumer finished, processed {} messages.", messages.size());
+
+        /* If we receive maximum amount of messages from the queue, we re-consume immediately */
       } catch (InterruptedException e) {
-        logger.error("Message Consumer caught en interrupted exception");
+        logger.error("Message consumer caught an exception with the queue {}.", queueName);
         logger.error(e.getMessage());
         e.printStackTrace();
+        break;
       }
 
-      /* If we receive maximum amount of messages, we check immediately if there is more */
       consumerDone = (messages.size() != maxMessages);
       logger.debug("Consumer done? {} ({})", Boolean.toString(consumerDone), messages.size());
     }
+
+    threadPoolExecutor.shutdown();
   }
 
   public void consumeMessages(String queueName, MessageHandler handler) {
