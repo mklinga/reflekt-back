@@ -26,8 +26,6 @@ public class EntrySavedMessageHandler implements MessageHandler {
 
   @Override
   public void handle(Message message) {
-    logger.info("Handling message " + message.messageId());
-
     Integer userId = Integer.parseInt(
         message.messageAttributes().get("userId").stringValue());
 

@@ -35,6 +35,7 @@ public class MessageSchedulerDefinitions {
   }
 
   @Scheduled(cron = "0 0 */3 * * *")
+  // @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS, initialDelay = 30)
   public void handleEntryUpdatedMessages() {
     messageConsumer.consumeMessages(entryUpdateQueue, entrySavedMessageHandler);
   }
