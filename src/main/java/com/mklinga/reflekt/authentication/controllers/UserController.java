@@ -1,6 +1,6 @@
 package com.mklinga.reflekt.authentication.controllers;
 
-import com.mklinga.reflekt.authentication.dtos.UserDto;
+import com.mklinga.reflekt.authentication.dtos.CreateUserDto;
 import com.mklinga.reflekt.authentication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class UserController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Void> addUser(@RequestBody UserDto user) {
+  public ResponseEntity<Void> addUser(@RequestBody CreateUserDto user) {
     userService.addUser(user);
     return ResponseEntity.ok().build();
   }

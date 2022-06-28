@@ -52,7 +52,7 @@ public class JournalEntryMessageService {
    * @param entry JournalEntry that has been updated
    */
   public void sendUpdateMessage(JournalEntry entry) {
-    logger.info("Sending the update message for id " + entry.getId().toString());
+    logger.info("Sending the update message for entry {}", entry.getId().toString());
     Map<String, MessageAttributeValue> attributes = new HashMap<>();
 
     attributes.put("entryId", createStringAttribute(entry.getId().toString()));

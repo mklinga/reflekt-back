@@ -1,6 +1,6 @@
 package com.mklinga.reflekt.authentication.services;
 
-import com.mklinga.reflekt.authentication.dtos.UserDto;
+import com.mklinga.reflekt.authentication.dtos.CreateUserDto;
 import com.mklinga.reflekt.authentication.model.Role;
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.authentication.repositories.RoleRepository;
@@ -42,12 +42,12 @@ public class UserService {
    * Provides a way of adding users to the application.
    * By default, all new users get the role USER.
    *
-   * @param userDto Data transfer object containing the username and password
+   * @param createUserDto Data transfer object containing the username and password
    */
-  public void addUser(UserDto userDto) {
+  public void addUser(CreateUserDto createUserDto) {
     User newUser = new User();
-    newUser.setUsername(userDto.getUsername());
-    newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    newUser.setUsername(createUserDto.getUsername());
+    newUser.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
     newUser.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
 
     Role userRole = roleRepository.findByRole("USER");

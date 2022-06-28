@@ -12,7 +12,7 @@
             </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="/home/ec2-user/logs">
-                    <IfFileName glob="/app-*.log.gz" />
+                    <IfFileName glob="*/app-*.log.gz" />
                     <IfLastModified age="7d" />
                 </Delete>
             </DefaultRolloverStrategy>
