@@ -4,10 +4,11 @@ import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
-import com.mklinga.reflekt.journal.dtos.JournalListItemDto;
 import com.mklinga.reflekt.journal.dtos.SearchResultDto;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import com.mklinga.reflekt.journal.repositories.JournalEntryRepository;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,17 +78,14 @@ public class JournalEntryService {
    * @return List of all items, if search is null, or a filtered list if search is enabled
    */
   @Transactional(readOnly = true)
-  public List<JournalListItemDto> getAllEntriesAsListItems(UserPrincipal user, String search) {
+  public List<JournalEntryDto> getAllEntries(UserPrincipal user, String search) {
     List<JournalEntry> entries = (search == null)
         ? getAllJournalEntries(user)
         : getFilteredJournalEntries(user, search);
 
-    return entries.stream().map(entry -> {
-      JournalListItemDto listItem = modelMapper.map(entry, JournalListItemDto.class);
-      listItem.setHasImages(!entry.getImages().isEmpty());
-
-      return listItem;
-    }).collect(Collectors.toList());
+    return entries.stream()
+        .map(entry -> modelMapper.map(entry, JournalEntryDto.class))
+        .collect(Collectors.toList());
   }
 
   public Optional<JournalEntry> getJournalEntry(UserPrincipal user, UUID uuid) {

@@ -4,7 +4,6 @@ import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.common.model.Navigable;
 import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
-import com.mklinga.reflekt.journal.dtos.JournalListItemDto;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import com.mklinga.reflekt.journal.services.JournalEntryService;
 import java.util.List;
@@ -47,9 +46,9 @@ public class JournalController {
    * @return list of JournalListItems
    */
   @GetMapping("")
-  public ResponseEntity<List<JournalListItemDto>> getJournalEntries(
+  public ResponseEntity<List<JournalEntryDto>> getJournalEntries(
       @AuthenticationPrincipal UserPrincipal user, @RequestParam(required = false) String search) {
-    List<JournalListItemDto> all = journalEntryService.getAllEntriesAsListItems(user, search);
+    List<JournalEntryDto> all = journalEntryService.getAllEntries(user, search);
 
     return ResponseEntity.ok(all);
   }
