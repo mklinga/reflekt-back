@@ -2,13 +2,12 @@ package com.mklinga.reflekt.journal.services;
 
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.common.model.LimitedResult;
 import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
 import com.mklinga.reflekt.journal.dtos.SearchResultDto;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import com.mklinga.reflekt.journal.repositories.JournalEntryRepository;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -17,11 +16,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,31 +57,21 @@ public class JournalEntryService {
   @PersistenceContext
   EntityManager entityManager;
 
-  private List<JournalEntry> getAllJournalEntries(UserPrincipal user) {
-    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-    return journalEntryRepository.findAllByOwner(user.getUser(), sort);
-  }
-
-  private List<JournalEntry> getFilteredJournalEntries(UserPrincipal user, String search) {
-    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-    return journalEntryRepository
-        .findAllByOwnerAndEntryContainingIgnoreCase(user.getUser(), search, sort);
-  }
-
   /**
    * Retrieves a list of all the journal entries in "listitem" format. This format is used in the
    * main /journal view of the application and doesn't need all the data from the items (most
    * notably, the actual entry text is omitted).
    *
    * @param user   Authenticated user
-   * @param search Possible search text
+   * @param limitedResult Includes limit & page for the wanted result offset. *Note* that the query-
+   *                      argument is not supported on this method.
    * @return List of all items, if search is null, or a filtered list if search is enabled
    */
   @Transactional(readOnly = true)
-  public List<JournalEntryDto> getAllEntries(UserPrincipal user, String search) {
-    List<JournalEntry> entries = (search == null)
-        ? getAllJournalEntries(user)
-        : getFilteredJournalEntries(user, search);
+  public List<JournalEntryDto> getAllEntries(UserPrincipal user, LimitedResult limitedResult) {
+    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
+    Pageable pageable = PageRequest.of(limitedResult.getPage(), limitedResult.getLimit(), sort);
+    List<JournalEntry> entries = journalEntryRepository.findAllByOwner(user.getUser(), pageable);
 
     return entries.stream()
         .map(entry -> modelMapper.map(entry, JournalEntryDto.class))

@@ -5,6 +5,7 @@ import com.mklinga.reflekt.journal.model.JournalEntry;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
@@ -12,7 +13,7 @@ import org.springframework.data.repository.CrudRepository;
  * Provides the interface methods that are used to interact with JournalEntry repository.
  */
 public interface JournalEntryRepository extends CrudRepository<JournalEntry, UUID> {
-  List<JournalEntry> findAllByOwner(User user, Sort sort);
+  List<JournalEntry> findAllByOwner(User user, Pageable pageable);
 
   List<JournalEntry> findAllByOwnerAndEntryContainingIgnoreCase(
       User user, String search, Sort sort

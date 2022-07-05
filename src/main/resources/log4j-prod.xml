@@ -11,8 +11,8 @@
                 <SizeBasedTriggeringPolicy size="50 MB"/>
             </Policies>
             <DefaultRolloverStrategy>
-                <Delete basePath="/home/ec2-user/logs">
-                    <IfFileName glob="*/app-*.log.gz" />
+                <Delete basePath="/home/ec2-user/logs/">
+                    <IfFileName glob="app-*.log*" />
                     <IfLastModified age="7d" />
                 </Delete>
             </DefaultRolloverStrategy>

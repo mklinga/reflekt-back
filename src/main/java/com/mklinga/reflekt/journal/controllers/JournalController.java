@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.journal.controllers;
 
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
+import com.mklinga.reflekt.common.model.LimitedResult;
 import com.mklinga.reflekt.common.model.Navigable;
 import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -47,8 +47,8 @@ public class JournalController {
    */
   @GetMapping("")
   public ResponseEntity<List<JournalEntryDto>> getJournalEntries(
-      @AuthenticationPrincipal UserPrincipal user, @RequestParam(required = false) String search) {
-    List<JournalEntryDto> all = journalEntryService.getAllEntries(user, search);
+      @AuthenticationPrincipal UserPrincipal user, LimitedResult limitedResult) {
+    List<JournalEntryDto> all = journalEntryService.getAllEntries(user, limitedResult);
 
     return ResponseEntity.ok(all);
   }
