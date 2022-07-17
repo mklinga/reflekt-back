@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.journal.dtos;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Data;
 
@@ -11,4 +12,5 @@ public class SearchResultDto {
   private UUID id;
   private String title;
   private String entry;
+  private LocalDate entryDate;
 }
