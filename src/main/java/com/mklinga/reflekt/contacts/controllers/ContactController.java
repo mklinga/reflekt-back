@@ -2,7 +2,6 @@ package com.mklinga.reflekt.contacts.controllers;
 
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
-import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.services.ContactService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

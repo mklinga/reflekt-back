@@ -1,3 +1,5 @@
 package com.mklinga.reflekt.authentication.dtos;
 
-public record UserDataDto(String username) {}
+import java.util.UUID;
+
+public record UserDataDto(String username, UUID contactId) {}

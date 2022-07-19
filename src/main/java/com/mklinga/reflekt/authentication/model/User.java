@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.authentication.model;
 
 import com.mklinga.reflekt.authentication.model.Role;
+import com.mklinga.reflekt.contacts.model.Contact;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -44,6 +46,12 @@ public class User {
 
   @Column(name = "password", nullable = false, columnDefinition = "VARCHAR(500)")
   private String password;
+
+  @OneToOne
+  @JoinTable(name = "users_contacts",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "contact_id"))
+  private Contact contact;
 
   @ManyToMany
   @JoinTable(name = "users_roles",

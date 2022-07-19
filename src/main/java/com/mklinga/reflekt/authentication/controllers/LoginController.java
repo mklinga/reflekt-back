@@ -2,6 +2,7 @@ package com.mklinga.reflekt.authentication.controllers;
 
 import com.mklinga.reflekt.authentication.dtos.HelloDto;
 import com.mklinga.reflekt.authentication.dtos.UserDataDto;
+import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -23,12 +24,12 @@ public class LoginController {
    * @return Returns a simple string, containing the authenticated username.
    */
   @GetMapping
-  public ResponseEntity<UserDataDto> sayHello(@AuthenticationPrincipal User user) {
+  public ResponseEntity<UserDataDto> sayHello(@AuthenticationPrincipal UserPrincipal user) {
     if (user == null) {
       return ResponseEntity.status(401).build();
     }
 
-    UserDataDto userDataDto = new UserDataDto(user.getUsername());
+    UserDataDto userDataDto = new UserDataDto(user.getUsername(), user.getUser().getContact().getId());
     return ResponseEntity.ok(userDataDto);
   }
 }
