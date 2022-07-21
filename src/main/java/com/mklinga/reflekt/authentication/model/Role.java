@@ -21,7 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class Role implements GrantedAuthority {
   @Id
   @GeneratedValue
-  private Long id;
+  private Integer id;
 
   @Column(name = "role", nullable = false, columnDefinition = "VARCHAR")
   private String role;

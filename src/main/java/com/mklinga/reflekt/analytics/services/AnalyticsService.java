@@ -1,13 +1,16 @@
 package com.mklinga.reflekt.analytics.services;
 
 import com.mklinga.reflekt.analytics.model.JournalUserAnalytics;
+import com.mklinga.reflekt.analytics.repositorios.JournalUserAnalyticsRepository;
 import com.mklinga.reflekt.authentication.model.User;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,13 @@ public class AnalyticsService {
   @PersistenceContext
   private EntityManager entityManager;
 
+  private final JournalUserAnalyticsRepository journalUserAnalyticsRepository;
+
+  @Autowired
+  public AnalyticsService(JournalUserAnalyticsRepository journalUserAnalyticsRepository) {
+    this.journalUserAnalyticsRepository = journalUserAnalyticsRepository;
+  }
+
   /**
    * Increase the analytic userUpdateCount in the database by 1. This method uses pessimistic
    * locking in the database to make sure every event is correctly handled.
@@ -31,22 +41,17 @@ public class AnalyticsService {
   @Transactional
   public void increaseUserUpdateCount(Integer userId) {
     User user = entityManager.find(User.class, userId);
-    TypedQuery<JournalUserAnalytics> query = entityManager
-        .createNamedQuery("GetJournalUserAnalyticsByUserWithLock", JournalUserAnalytics.class)
-        .setParameter("user", user);
+    JournalUserAnalytics journalUserAnalytics = journalUserAnalyticsRepository
+        .findJournalUserAnalyticsByUserWithLock(user);
 
-    JournalUserAnalytics journalUserAnalytics;
-
-    try {
-      journalUserAnalytics = query.getSingleResult();
-    } catch (NoResultException noResultException) {
+    if (journalUserAnalytics == null) {
       journalUserAnalytics = new JournalUserAnalytics();
       journalUserAnalytics.setUser(user);
       journalUserAnalytics.setUpdateCount(0);
     }
 
     journalUserAnalytics.setUpdateCount(journalUserAnalytics.getUpdateCount() + 1);
-    entityManager.persist(journalUserAnalytics);
+    journalUserAnalyticsRepository.save(journalUserAnalytics);
   }
 
   /**
@@ -56,18 +61,6 @@ public class AnalyticsService {
    * @return JournalUserAnalytics object from the database
    */
   public JournalUserAnalytics getJournalUserAnalytics(User user) {
-    TypedQuery<JournalUserAnalytics> query = entityManager
-        .createNamedQuery("GetJournalUserAnalyticsByUser", JournalUserAnalytics.class)
-        .setParameter("user", user);
-
-    try {
-      return query.getSingleResult();
-    } catch (NoResultException noResultException) {
-      return null;
-    } catch (Exception e) {
-      logger.error("Something has gone wrong with getJournalUserAnalytics");
-      logger.error(e.getMessage());
-      return null;
-    }
+    return journalUserAnalyticsRepository.findJournalUserAnalyticsByUser(user);
   }
 }

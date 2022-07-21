@@ -19,17 +19,11 @@ import org.hibernate.annotations.GenericGenerator;
  * JournalUseAnalytics stores all the analytical information about the journal user.
  * TODO: Maybe we should move this into simple analytics_user, and use for CRM etc. as well?
  */
-@NamedQuery(
-    name = "GetJournalUserAnalyticsByUserWithLock",
-    query = "SELECT u FROM JournalUserAnalytics u WHERE u.user = :user",
-    lockMode = LockModeType.PESSIMISTIC_WRITE)
-@NamedQuery(
-    name = "GetJournalUserAnalyticsByUser",
-    query = "SELECT u FROM JournalUserAnalytics u WHERE u.user = :user")
 @Entity
 @Table(name = "analytics_journal_user")
 public class JournalUserAnalytics {
   @Id
+  @Getter
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(name = "id", updatable = false, nullable = false)
