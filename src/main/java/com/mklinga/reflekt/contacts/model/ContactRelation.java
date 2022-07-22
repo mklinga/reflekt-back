@@ -1,5 +1,6 @@
 package com.mklinga.reflekt.contacts.model;
 
+import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -9,10 +10,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @EqualsAndHashCode
 @Getter
+@Setter
 @Table(name = "contact_relations")
 public class ContactRelation {
   @Id

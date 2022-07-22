@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.mklinga.reflekt.analytics.model.JournalUserAnalytics;
 import com.mklinga.reflekt.authentication.model.User;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql("/test-scripts/analytics/AnalyticsServiceTestSql.sql")
+@Sql("/test-scripts/analytics/JournalUserAnalyticsRepositoryTestData.sql")
 class JournalUserAnalyticsRepositoryTest {
 
   @Autowired
