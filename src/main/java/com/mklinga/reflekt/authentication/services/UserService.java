@@ -53,7 +53,7 @@ public class UserService {
     Role userRole = roleRepository.findByRole("USER");
     newUser.setRoles(Set.of(userRole));
 
-    /* TODO: We need also to create a new Contact for the user */
+    /* TODO: We need also to create a new JpaContact for the user */
 
     userRepository.save(newUser);
   }

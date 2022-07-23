@@ -1,11 +1,9 @@
 package com.mklinga.reflekt.authentication.controllers;
 
-import com.mklinga.reflekt.authentication.dtos.HelloDto;
 import com.mklinga.reflekt.authentication.dtos.UserDataDto;
 import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +27,7 @@ public class LoginController {
       return ResponseEntity.status(401).build();
     }
 
-    UserDataDto userDataDto = new UserDataDto(user.getUsername(), user.getUser().getContact().getId());
+    UserDataDto userDataDto = new UserDataDto(user.getUsername(), user.getUser().getJpaContact().getId());
     return ResponseEntity.ok(userDataDto);
   }
 }

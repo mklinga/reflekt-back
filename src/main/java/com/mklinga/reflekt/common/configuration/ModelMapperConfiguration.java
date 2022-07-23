@@ -1,5 +1,8 @@
 package com.mklinga.reflekt.common.configuration;
 
+import com.mklinga.reflekt.business.Contact;
+import com.mklinga.reflekt.business.FullName;
+import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.journal.dtos.ImageDataDto;
@@ -31,9 +34,24 @@ public class ModelMapperConfiguration {
         .addMapping(Image::getImageName, ImageDataDto::setName);
 
     /*
-      Our ContactRelation contains fields `subject` and `object` as full Contact objects, but we
+      Our ContactRelation contains fields `subject` and `object` as full JpaContact objects, but we
       want to send only the ID's to the frontend for these in the ContactRelationDto.
      */
+
+//    modelMapper
+//        .typeMap(ContactDto.class, Contact.class)
+//        .addMappings(m ->
+//            m
+//                .using(ctx -> new FullName(
+//                  ((ContactDto) ctx.getSource()).getFirstName(),
+//                  ((ContactDto) ctx.getSource()).getLastName())))
+//                .map(ContactDto.class, Contact::setFullName);
+
+    modelMapper
+        .typeMap(ContactDto.class, Contact.class)
+            .addMappings(m -> m.map(
+                src -> new FullName(src.getFirstName(), src.getLastName()),
+                Contact::setFullName));
 
     modelMapper
         .typeMap(ContactRelation.class, ContactRelationDto.class)

@@ -2,6 +2,7 @@ package com.mklinga.reflekt.contacts.dtos;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import java.util.UUID;
 import java.util.stream.Stream;

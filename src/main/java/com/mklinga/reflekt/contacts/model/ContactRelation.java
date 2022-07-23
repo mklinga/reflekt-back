@@ -1,6 +1,5 @@
 package com.mklinga.reflekt.contacts.model;
 
-import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,11 +28,11 @@ public class ContactRelation {
 
   @ManyToOne
   @JoinColumn(name = "subject")
-  private Contact subject;
+  private JpaContact subject;
 
   private RelationPredicate predicate;
 
   @ManyToOne
   @JoinColumn(name = "object")
-  private Contact object;
+  private JpaContact object;
 }

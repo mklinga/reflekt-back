@@ -8,19 +8,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mklinga.reflekt.authentication.model.User;
+import com.mklinga.reflekt.business.FullName;
 import com.mklinga.reflekt.common.ApplicationTestConfiguration;
 import com.mklinga.reflekt.common.TestAuthentication;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
-import com.mklinga.reflekt.contacts.model.Contact;
+import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.services.ContactService;
-import com.mklinga.reflekt.journal.dtos.TagDataDto;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,12 +35,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(ContactController.class)
 @Import(ApplicationTestConfiguration.class)
-class ContactControllerTest {
+class JpaContactControllerTest {
 
   @MockBean
   private ContactService contactService;
@@ -51,31 +50,30 @@ class ContactControllerTest {
   @Autowired
   private ModelMapper modelMapper;
 
-  private List<Contact> getTestContacts() {
+  private List<JpaContact> getTestContacts() {
 
-    Contact first = new Contact();
-    first.setId(UUID.fromString("e278a279-d5d0-4497-8879-b6dbf6a68431"));
-    first.setFirstName("First");
-    first.setLastName("Contact1");
+    JpaContact first = new JpaContact(UUID.fromString("e278a279-d5d0-4497-8879-b6dbf6a68431"),
+        new FullName("First", "Contact1"), null, new ArrayList<>());
 
-    Contact second = new Contact();
-    second.setId(UUID.fromString("5adb4e88-26b3-48d2-9505-dad505a8fffe"));
-    second.setFirstName("Second");
-    second.setLastName("Contact2");
+    JpaContact second = new JpaContact(
+        UUID.fromString("5adb4e88-26b3-48d2-9505-dad505a8fffe"),
+        new FullName("Second", "Contact2"),
+        null,
+        new ArrayList<>());
 
     ContactRelation relation1 = new ContactRelation();
     relation1.setId(1);
     relation1.setSubject(first);
     relation1.setPredicate(RelationPredicate.IS_FATHER_OF);
     relation1.setObject(second);
-    first.setRelations(List.of(relation1));
+    first.addRelation(relation1);
 
     ContactRelation relation2 = new ContactRelation();
     relation2.setId(2);
     relation2.setSubject(second);
     relation2.setPredicate(RelationPredicate.IS_CHILD_OF);
     relation2.setObject(first);
-    second.setRelations(List.of(relation2));
+    second.addRelation(relation2);
 
     return List.of(first, second);
   }
@@ -139,7 +137,7 @@ class ContactControllerTest {
           {
             "id":"00000000-0000-0000-0000-000000000000",
             "firstName":"New",
-            "lastName":"Contact",
+            "lastName":"JpaContact",
             "relations":
             [
               {
@@ -158,22 +156,24 @@ class ContactControllerTest {
     }
 
     private ContactDto getSavedContact() {
-      List<Contact> existingContacts = getTestContacts();
+      List<JpaContact> existingJpaContacts = getTestContacts();
 
-      Contact savedContact = new Contact();
-      savedContact.setId(UUID.fromString("cd1ac07f-4959-441d-9c26-8f7b8533e073"));
-      savedContact.setFirstName("Saved");
-      savedContact.setLastName("Contact");
+      JpaContact savedJpaContact = new JpaContact(
+          UUID.fromString("cd1ac07f-4959-441d-9c26-8f7b8533e073"),
+          new FullName("Saved", "Contact"),
+          null,
+          new ArrayList<>()
+      );
 
       ContactRelation relation = new ContactRelation();
       relation.setId(3);
-      relation.setSubject(savedContact);
+      relation.setSubject(savedJpaContact);
       relation.setPredicate(RelationPredicate.IS_FRIEND_OF);
-      relation.setObject(existingContacts.get(0));
+      relation.setObject(existingJpaContacts.get(0));
 
-      savedContact.setRelations(List.of(relation));
+      savedJpaContact.addRelation(relation);
 
-      return modelMapper.map(savedContact, ContactDto.class);
+      return modelMapper.map(savedJpaContact, ContactDto.class);
     }
 
     @Test
@@ -192,7 +192,7 @@ class ContactControllerTest {
       ContactDto requestContact = contactArgument.getValue();
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"), requestContact.getId());
       assertEquals("New", requestContact.getFirstName());
-      assertEquals("Contact", requestContact.getLastName());
+      assertEquals("JpaContact", requestContact.getLastName());
       List<ContactRelationDto> relationDtoList = requestContact.getRelations();
       assertEquals(1, relationDtoList.size());
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"),
@@ -209,7 +209,7 @@ class ContactControllerTest {
           {
             "id":"cd1ac07f-4959-441d-9c26-8f7b8533e073",
             "firstName":"Saved",
-            "lastName":"Contact",
+            "lastName":"JpaContact",
             "relations":[
               {
                 "id":3,

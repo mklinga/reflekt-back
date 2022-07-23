@@ -1,7 +1,6 @@
 package com.mklinga.reflekt.authentication.model;
 
-import com.mklinga.reflekt.authentication.model.Role;
-import com.mklinga.reflekt.contacts.model.Contact;
+import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,7 +50,7 @@ public class User {
   @JoinTable(name = "users_contacts",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "contact_id"))
-  private Contact contact;
+  private JpaContact jpaContact;
 
   @ManyToMany
   @JoinTable(name = "users_roles",
