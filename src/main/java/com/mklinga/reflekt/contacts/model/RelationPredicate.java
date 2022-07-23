@@ -6,7 +6,8 @@ public enum RelationPredicate {
   IS_FATHER_OF("isFatherOf"),
   IS_SIBLING_OF("isSiblingOf"),
   IS_COLLEAGUE_OF("isColleagueOf"),
-  IS_PARTNER_OF("isPartnerOf");
+  IS_PARTNER_OF("isPartnerOf"),
+  IS_CHILD_OF("isChildOf");
 
   private String code;
 
