@@ -1,4 +1,4 @@
-package com.mklinga.reflekt.business;
+package com.mklinga.reflekt.contacts.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

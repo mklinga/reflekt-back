@@ -1,17 +1,16 @@
 package com.mklinga.reflekt.contacts.services;
 
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.business.Contact;
-import com.mklinga.reflekt.business.FullName;
+import com.mklinga.reflekt.contacts.business.Contact;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
+import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.model.JpaContact;
-import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
+import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
 import com.mklinga.reflekt.exceptions.ContactExistsException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,7 @@ public class ContactService {
   @Transactional(readOnly = true)
   public List<ContactDto> getAllContacts(User user) {
     List<JpaContact> jpaContacts = this.contactRepository.findAllByOwner(user);
-    return jpaContacts.stream()
-        .map(Contact::toDto)
-        .collect(Collectors.toList());
+    return Contact.toDto(jpaContacts);
   }
 
   @Transactional
@@ -43,15 +40,25 @@ public class ContactService {
     }
 
     /* First, we save the contact as an Draft to obtain an ID for it */
-    JpaContact newJpaContact = JpaContact.createDraftContact(
+    JpaContact draftContact = JpaContact.createDraftContact(
         new FullName(newContactDto.getFirstName(), newContactDto.getLastName()), user);
-    JpaContact savedJpaContact = contactRepository.save(newJpaContact);
+    JpaContact savedDraftContact = contactRepository.save(draftContact);
 
     /* Next, we replace all the draft ids in the relations with the one we got back from db */
-    List<JpaContact> allJpaContacts = contactRepository.findAllByOwner(user);
-    savedJpaContact.insertDraftableRelations(newContactDto, allJpaContacts);
+    List<ContactRelationDto> relations = ContactRelationDto
+        .replaceDraftIds(newContactDto.getRelations(), savedDraftContact.getId());
 
-    JpaContact savedJpaContactWithRelations = contactRepository.save(savedJpaContact);
+    /* Then, map the ContactRelationDto into real ContactRelations */
+    ContactIdResolver contactIdResolver =
+        new ContactIdResolver(contactRepository.findAllByOwner(user));
+
+    List<ContactRelation> jpaContactRelations =
+        ContactRelationDto.resolveList(relations, contactIdResolver);
+
+    /* Insert them into the draft Contact item */
+    savedDraftContact.insertInitialRelations(jpaContactRelations);
+
+    JpaContact savedJpaContactWithRelations = contactRepository.save(savedDraftContact);
     return modelMapper.map(savedJpaContactWithRelations, ContactDto.class);
   }
 }

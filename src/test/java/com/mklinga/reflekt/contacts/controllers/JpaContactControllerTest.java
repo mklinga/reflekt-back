@@ -8,13 +8,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.business.FullName;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
+import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.common.ApplicationTestConfiguration;
 import com.mklinga.reflekt.common.TestAuthentication;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.model.JpaContact;
-import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.services.ContactService;
 import java.util.ArrayList;
@@ -61,18 +61,12 @@ class JpaContactControllerTest {
         null,
         new ArrayList<>());
 
-    ContactRelation relation1 = new ContactRelation();
-    relation1.setId(1);
-    relation1.setSubject(first);
-    relation1.setPredicate(RelationPredicate.IS_FATHER_OF);
-    relation1.setObject(second);
+    ContactRelation relation1 = new ContactRelation(
+        1, first, RelationPredicate.IS_FATHER_OF, second);
     first.addRelation(relation1);
 
-    ContactRelation relation2 = new ContactRelation();
-    relation2.setId(2);
-    relation2.setSubject(second);
-    relation2.setPredicate(RelationPredicate.IS_CHILD_OF);
-    relation2.setObject(first);
+    ContactRelation relation2 = new ContactRelation(
+        2, second, RelationPredicate.IS_CHILD_OF, first);
     second.addRelation(relation2);
 
     return List.of(first, second);
@@ -165,11 +159,8 @@ class JpaContactControllerTest {
           new ArrayList<>()
       );
 
-      ContactRelation relation = new ContactRelation();
-      relation.setId(3);
-      relation.setSubject(savedJpaContact);
-      relation.setPredicate(RelationPredicate.IS_FRIEND_OF);
-      relation.setObject(existingJpaContacts.get(0));
+      ContactRelation relation = new ContactRelation(
+          3, savedJpaContact, RelationPredicate.IS_FRIEND_OF, existingJpaContacts.get(0));
 
       savedJpaContact.addRelation(relation);
 
@@ -192,7 +183,7 @@ class JpaContactControllerTest {
       ContactDto requestContact = contactArgument.getValue();
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"), requestContact.getId());
       assertEquals("New", requestContact.getFirstName());
-      assertEquals("JpaContact", requestContact.getLastName());
+      assertEquals("Contact", requestContact.getLastName());
       List<ContactRelationDto> relationDtoList = requestContact.getRelations();
       assertEquals(1, relationDtoList.size());
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"),
@@ -209,7 +200,7 @@ class JpaContactControllerTest {
           {
             "id":"cd1ac07f-4959-441d-9c26-8f7b8533e073",
             "firstName":"Saved",
-            "lastName":"JpaContact",
+            "lastName":"Contact",
             "relations":[
               {
                 "id":3,

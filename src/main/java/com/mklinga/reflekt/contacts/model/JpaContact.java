@@ -1,9 +1,7 @@
 package com.mklinga.reflekt.contacts.model;
 
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.business.Contact;
-import com.mklinga.reflekt.business.FullName;
-import com.mklinga.reflekt.contacts.dtos.ContactDto;
+import com.mklinga.reflekt.contacts.business.Contact;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,14 +62,9 @@ public class JpaContact extends Contact {
   }
 
   @Override
-  public void setFullName(FullName fullName) {
+  protected void setFullName(FullName fullName) {
     this.firstName = fullName.getFirstName();
     this.lastName = fullName.getLastName();
-  }
-
-  @Override
-  protected void setOwner(User owner) {
-    this.owner = owner;
   }
 
   @Override
