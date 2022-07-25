@@ -2,9 +2,11 @@ package com.mklinga.reflekt.contacts.business;
 
 import static com.mklinga.reflekt.common.configuration.ModelMapperConfiguration.getModelMapper;
 
+import com.mklinga.reflekt.contacts.exceptions.ContactRelationsExistException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,12 +38,16 @@ public abstract class Contact {
   }
 
   public void addRelation(ContactRelation relation) {
-    this.getRelations().add(relation);
+    List<ContactRelation> relations = new ArrayList<>(this.getRelations());
+    relations.add(relation);
+    this.setRelations(relations);
   }
 
   public void insertInitialRelations(List<ContactRelation> relations) {
     if (!this.getRelations().isEmpty()) {
-      throw new RuntimeException("Cannot insert initial relations when relations is not empty");
+      throw new ContactRelationsExistException(
+          "Cannot insert initial relations when relations is not empty"
+      );
     }
 
     this.setRelations(relations);

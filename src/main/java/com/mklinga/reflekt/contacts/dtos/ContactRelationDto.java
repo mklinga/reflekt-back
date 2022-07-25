@@ -35,10 +35,6 @@ public class ContactRelationDto {
 
   @JsonGetter(value = "predicate")
   public String getJsonPredicate() {
-    if (this.predicate == null) {
-      return null;
-    }
-
     return this.predicate.getCode();
   }
 
