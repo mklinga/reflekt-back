@@ -31,11 +31,10 @@ public class ContactController {
   }
 
   @PostMapping("")
-  public ResponseEntity<ContactDto> addContact(
-      @AuthenticationPrincipal UserPrincipal userPrincipal,
-      @RequestBody ContactDto newContact) {
+  public ResponseEntity<ContactDto> addContact(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                               @RequestBody ContactDto newContact) {
 
-      ContactDto savedContact = contactService.addContact(userPrincipal.getUser(), newContact);
-      return ResponseEntity.ok(savedContact);
+    ContactDto savedContact = contactService.addContact(userPrincipal.getUser(), newContact);
+    return ResponseEntity.ok(savedContact);
   }
 }

@@ -2,10 +2,10 @@ package com.mklinga.reflekt.contacts.business;
 
 import static com.mklinga.reflekt.common.configuration.ModelMapperConfiguration.getModelMapper;
 
+import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactRelationsExistException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
-import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

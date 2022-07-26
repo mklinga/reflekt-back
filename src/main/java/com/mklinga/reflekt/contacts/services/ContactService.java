@@ -2,14 +2,14 @@ package com.mklinga.reflekt.contacts.services;
 
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.business.Contact;
-import com.mklinga.reflekt.contacts.model.ContactRelation;
-import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
+import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
+import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
-import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

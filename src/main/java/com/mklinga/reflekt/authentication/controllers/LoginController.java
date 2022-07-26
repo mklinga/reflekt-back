@@ -27,7 +27,8 @@ public class LoginController {
       return ResponseEntity.status(401).build();
     }
 
-    UserDataDto userDataDto = new UserDataDto(user.getUsername(), user.getUser().getJpaContact().getId());
+    UserDataDto userDataDto =
+        new UserDataDto(user.getUsername(), user.getUser().getJpaContact().getId());
     return ResponseEntity.ok(userDataDto);
   }
 }

@@ -14,14 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "contacts")
 public class JpaContact extends Contact {
   @Id
-  @Getter
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(name = "id", updatable = false, nullable = false)
@@ -54,6 +52,11 @@ public class JpaContact extends Contact {
 
   public static JpaContact createDraftContact(FullName fullName, User owner) {
     return new JpaContact(Contact.draftId, fullName, owner, new ArrayList<>());
+  }
+
+  @Override
+  public UUID getId() {
+    return this.id;
   }
 
   @Override

@@ -3,8 +3,8 @@ package com.mklinga.reflekt.contacts.dtos;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.mklinga.reflekt.contacts.business.Contact;
-import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
+import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
 import java.util.List;
@@ -63,7 +63,7 @@ public class ContactRelationDto {
         (JpaContact) contactIdResolver.resolve(this.subject),
         this.predicate,
         (JpaContact) contactIdResolver.resolve(this.object)
-        );
+    );
   }
 
   public static List<ContactRelation> resolveList(List<ContactRelationDto> relationDtoList,

@@ -1,10 +1,7 @@
 package com.mklinga.reflekt.common.configuration;
 
-import com.mklinga.reflekt.contacts.business.Contact;
-import com.mklinga.reflekt.contacts.model.ContactRelation;
-import com.mklinga.reflekt.contacts.model.FullName;
-import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.journal.dtos.ImageDataDto;
 import com.mklinga.reflekt.journal.model.Image;
 import org.modelmapper.ModelMapper;
