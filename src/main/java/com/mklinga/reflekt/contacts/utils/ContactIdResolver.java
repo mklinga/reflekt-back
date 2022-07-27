@@ -18,4 +18,8 @@ public class ContactIdResolver {
   public Contact resolve(UUID id) {
     return this.contacts.get(id);
   }
+
+  public void addContact(Contact contact) {
+    this.contacts.put(contact.getId(), contact);
+  }
 }

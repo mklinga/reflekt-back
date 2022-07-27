@@ -51,7 +51,7 @@ public class JpaContact extends Contact {
   }
 
   public static JpaContact createDraftContact(FullName fullName, User owner) {
-    return new JpaContact(Contact.draftId, fullName, owner, new ArrayList<>());
+    return new JpaContact(UUID.randomUUID(), fullName, owner, new ArrayList<>());
   }
 
   @Override

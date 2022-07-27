@@ -11,6 +11,7 @@ import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
 import java.util.List;
+import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,26 +40,25 @@ public class ContactService {
       throw new ContactExistsException("Cannot add a contact with existing ID");
     }
 
-    /* First, we save the contact as an Draft to obtain an ID for it */
     JpaContact draftContact = JpaContact.createDraftContact(
         new FullName(newContactDto.getFirstName(), newContactDto.getLastName()), user);
-    JpaContact savedDraftContact = contactRepository.save(draftContact);
 
-    /* Next, we replace all the draft ids in the relations with the one we got back from db */
+    /* Next, we replace all the draft ids in the relations */
     List<ContactRelationDto> relations = ContactRelationDto
-        .replaceDraftIds(newContactDto.getRelations(), savedDraftContact.getId());
+        .replaceDraftIds(newContactDto.getRelations(), draftContact.getId());
 
     /* Then, map the ContactRelationDto into real ContactRelations */
     ContactIdResolver contactIdResolver =
         new ContactIdResolver(contactRepository.findAllByOwner(user));
+    contactIdResolver.addContact(draftContact);
 
     List<ContactRelation> jpaContactRelations =
         ContactRelationDto.resolveList(relations, contactIdResolver);
 
     /* Insert them into the draft Contact item */
-    savedDraftContact.insertInitialRelations(jpaContactRelations);
+    draftContact.insertInitialRelations(jpaContactRelations);
 
-    JpaContact savedJpaContactWithRelations = contactRepository.save(savedDraftContact);
+    JpaContact savedJpaContactWithRelations = contactRepository.save(draftContact);
     return modelMapper.map(savedJpaContactWithRelations, ContactDto.class);
   }
 }
