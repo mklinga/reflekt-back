@@ -11,7 +11,7 @@ public enum RelationPredicate {
 
   private String code;
 
-  private RelationPredicate(String code) {
+  RelationPredicate(String code) {
     this.code = code;
   }
 

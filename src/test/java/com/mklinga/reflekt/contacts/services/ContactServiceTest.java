@@ -98,8 +98,6 @@ class ContactServiceTest {
 
     @Test
     void itSavesNewContactAndHandlesDraftIdReplacementsAndReturnsIt() {
-      User user = testUser();
-
       ContactRelationDto contactRelationDto = createContactRelationDto();
       contactRelationDto.setSubject(Contact.draftId);
 
@@ -111,37 +109,24 @@ class ContactServiceTest {
 
       /* Mocks */
 
-      UUID savedId = UUID.randomUUID();
-      /* When saving DRAFT, we return same item but with ID */
-      when(contactRepository.save(argThat(contact -> contact != null && contact.getId().equals(Contact.draftId))))
-          .thenAnswer(invocation -> {
-            JpaContact argument = invocation.getArgument(0);
-            return new JpaContact(savedId, argument.getFullName(), user, argument.getRelations());
-          });
-
-      when(contactRepository.save(argThat(contact -> contact != null && contact.getId().equals(savedId))))
+      when(contactRepository.save(any(JpaContact.class)))
           .thenAnswer(invocation -> invocation.getArgument(0));
 
       List<JpaContact> testContacts = new ArrayList<>(getTestContacts());
-
-      // We add newly saved DRAFT contact to be retrieved from the findAllByOwner, note that for
-      // this draft contact the relations are still empty
-      testContacts.add(new JpaContact(savedId, new FullName("New FirstName", "New LastName"), user, new ArrayList<>()));
-
       when(contactRepository.findAllByOwner(any(User.class))).thenReturn(testContacts);
 
       /* Test call */
-      ContactDto result = contactService.addContact(user, newContactDto);
+      ContactDto result = contactService.addContact(testUser(), newContactDto);
 
       /* Assertion */
       assertNotNull(result);
-      assertEquals(savedId, result.getId());
+      assertNotEquals(Contact.draftId, result.getId());
       assertEquals("New FirstName", result.getFirstName());
       assertEquals("New LastName", result.getLastName());
 
       List<ContactRelationDto> savedRelations = result.getRelations();
       assertEquals(1, savedRelations.size());
-      assertEquals(savedId, savedRelations.get(0).getSubject());
+      assertNotEquals(Contact.draftId, savedRelations.get(0).getSubject());
       assertEquals(contactRelationDto.getObject(), savedRelations.get(0).getObject());
       assertEquals(contactRelationDto.getPredicate(), savedRelations.get(0).getPredicate());
     }
