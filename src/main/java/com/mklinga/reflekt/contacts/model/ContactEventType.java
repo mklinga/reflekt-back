@@ -1,8 +1,8 @@
 package com.mklinga.reflekt.contacts.model;
 
 public enum ContactEventType {
-  PHONE("Phone"),
-  PRESENT("Present");
+  PHONE("PHONE"),
+  IN_PERSON("IN_PERSON");
 
   private String type;
 

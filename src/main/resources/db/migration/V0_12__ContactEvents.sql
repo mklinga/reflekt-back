@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS "contact_events" (
     id UUID PRIMARY KEY,
     event_type TEXT NOT NULL,
     event_date DATE NOT NULL,
-    description TEXT
+    description TEXT,
+    title TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "contact_event_participants" (
