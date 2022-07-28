@@ -5,8 +5,6 @@ import com.mklinga.reflekt.analytics.repositorios.JournalUserAnalyticsRepository
 import com.mklinga.reflekt.authentication.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class AnalyticsService {
-
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @PersistenceContext
   private EntityManager entityManager;

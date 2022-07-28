@@ -9,7 +9,7 @@ public enum RelationPredicate {
   IS_PARTNER_OF("isPartnerOf"),
   IS_CHILD_OF("isChildOf");
 
-  private String code;
+  private final String code;
 
   RelationPredicate(String code) {
     this.code = code;

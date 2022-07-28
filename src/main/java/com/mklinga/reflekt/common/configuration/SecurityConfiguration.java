@@ -26,8 +26,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
-  LoginSuccessHandler loginSuccessHandler;
-  LoginFailureHandler loginFailureHandler;
+  private final LoginSuccessHandler loginSuccessHandler;
+  private final LoginFailureHandler loginFailureHandler;
 
   @Autowired
   public SecurityConfiguration(LoginSuccessHandler loginSuccessHandler,

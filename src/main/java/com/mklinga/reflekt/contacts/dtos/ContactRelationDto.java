@@ -7,6 +7,7 @@ import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
+import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

@@ -1,6 +1,5 @@
 package com.mklinga.reflekt.contacts.model;
 
-import com.mklinga.reflekt.authentication.model.User;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;

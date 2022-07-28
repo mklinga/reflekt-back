@@ -4,7 +4,6 @@ import static com.mklinga.reflekt.common.TestAuthentication.testUser;
 import static com.mklinga.reflekt.common.configuration.ModelMapperConfiguration.getModelMapper;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 import com.mklinga.reflekt.authentication.model.User;

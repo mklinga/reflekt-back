@@ -4,7 +4,7 @@ public enum ContactEventType {
   PHONE("PHONE"),
   IN_PERSON("IN_PERSON");
 
-  private String type;
+  private final String type;
 
   ContactEventType(String type) {
     this.type = type;

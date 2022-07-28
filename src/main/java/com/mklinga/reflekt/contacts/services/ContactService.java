@@ -9,9 +9,8 @@ import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
-import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
+import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.List;
-import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,12 +47,12 @@ public class ContactService {
         .replaceDraftIds(newContactDto.getRelations(), draftContact.getId());
 
     /* Then, map the ContactRelationDto into real ContactRelations */
-    ContactIdResolver contactIdResolver =
-        new ContactIdResolver(contactRepository.findAllByOwner(user));
-    contactIdResolver.addContact(draftContact);
+    InMemoryContactIdResolver inMemoryContactIdResolver =
+        new InMemoryContactIdResolver(contactRepository.findAllByOwner(user));
+    inMemoryContactIdResolver.addContact(draftContact);
 
     List<ContactRelation> jpaContactRelations =
-        ContactRelationDto.resolveList(relations, contactIdResolver);
+        ContactRelationDto.resolveList(relations, inMemoryContactIdResolver);
 
     /* Insert them into the draft Contact item */
     draftContact.insertInitialRelations(jpaContactRelations);

@@ -9,6 +9,7 @@ import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
+import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -84,7 +85,9 @@ class ContactRelationDtoTest {
     JpaContact jpaObject = new JpaContact(
         testObject, new FullName("Mr", "Object"), testUser(), new ArrayList<>());
 
-    ContactIdResolver contactIdResolver = new ContactIdResolver(List.of(jpaSubject, jpaObject));
+    ContactIdResolver contactIdResolver =
+        new InMemoryContactIdResolver(List.of(jpaSubject, jpaObject));
+
     ContactRelationDto contactRelationDto = createTestDto();
     List<ContactRelation> result = ContactRelationDto.resolveList(
         List.of(contactRelationDto), contactIdResolver);
