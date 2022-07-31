@@ -15,6 +15,15 @@ public interface ContactEventRepository extends JpaRepository<ContactEvent, UUID
       value = "SELECT DISTINCT(e.*) FROM contact_events e"
           + "  INNER JOIN contact_event_participants p ON e.id = p.contact_event_id"
           + "  INNER JOIN contacts c ON c.id = p.contact_id"
-          + "  WHERE owner = :owner_id")
+          + "  WHERE c.owner = :owner_id")
   List<ContactEvent> findAllByOwner(@Param("owner_id") Integer userId);
+
+  @Query(
+      nativeQuery = true,
+      value = "SELECT DISTINCT(e.*) FROM contact_events e"
+          + "  INNER JOIN contact_event_participants p ON p.contact_id = :contact_id"
+          + "  INNER JOIN contacts c ON c.id = p.contact_id"
+          + "  WHERE c.owner = :owner_id AND c.id = :contact_id")
+  List<ContactEvent> findAllByOwnerAndContactId(
+      @Param("owner_id") Integer userId, @Param("contact_id") UUID contactId);
 }

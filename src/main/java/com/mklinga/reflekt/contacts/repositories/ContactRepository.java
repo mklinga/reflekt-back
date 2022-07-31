@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContactRepository extends JpaRepository<JpaContact, UUID> {
   List<JpaContact> findAllByOwner(User owner);
+
+  JpaContact findByIdAndOwner(UUID id, User owner);
 }

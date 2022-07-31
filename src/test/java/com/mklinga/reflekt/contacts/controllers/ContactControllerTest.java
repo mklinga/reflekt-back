@@ -1,6 +1,8 @@
 package com.mklinga.reflekt.contacts.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,6 +21,7 @@ import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.services.ContactService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(ContactController.class)
 @Import(ApplicationTestConfiguration.class)
-class JpaContactControllerTest {
+class ContactControllerTest {
 
   @MockBean
   private ContactService contactService;
@@ -83,7 +86,7 @@ class JpaContactControllerTest {
   @WithUserDetails(TestAuthentication.testUserName)
   void getContactsReturnsAListOfContacts() throws Exception {
     List<ContactDto> contactList = getTestContactDtos();
-    when(contactService.getAllContacts(Mockito.any(User.class)))
+    when(contactService.getAllContacts(any(User.class)))
         .thenReturn(contactList);
 
     String expectedBody = """
@@ -122,6 +125,51 @@ class JpaContactControllerTest {
   }
 
   @Nested
+  @DisplayName("getContact")
+  public class GetContactTest {
+
+    @Test
+    @WithUserDetails(TestAuthentication.testUserName)
+    void returnsSpecifiedContact() throws Exception {
+      ContactDto contact = getTestContactDtos().get(0);
+      when(contactService.getContactById(
+          eq(UUID.fromString("e278a279-d5d0-4497-8879-b6dbf6a68431")),
+          any(User.class))).thenReturn(Optional.of(contact));
+
+      String expectedBody = """
+        {
+          "id":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+          "firstName":"First",
+          "lastName":"Contact1",
+          "relations":[
+            {
+              "id":1,
+              "subject":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+              "object":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
+              "predicate":"isFatherOf"
+            }
+          ]
+        }
+        """;
+
+      mockMvc.perform(MockMvcRequestBuilders.get("/contacts/e278a279-d5d0-4497-8879-b6dbf6a68431"))
+          .andExpectAll(status().isOk(), content().json(expectedBody));
+    }
+
+    @Test
+    @WithUserDetails(TestAuthentication.testUserName)
+    void returns404WhenContactNotFound() throws Exception {
+      when(contactService.getContactById(
+          eq(UUID.fromString("e278a279-d5d0-4497-8879-b6dbf6a68431")),
+          any(User.class))).thenReturn(Optional.empty());
+
+      mockMvc
+          .perform(MockMvcRequestBuilders.get("/contacts/e278a279-d5d0-4497-8879-b6dbf6a68431"))
+          .andExpect(status().isNotFound());
+    }
+  }
+
+  @Nested
   @DisplayName("addContact")
   public class AddContactTest {
 
@@ -145,7 +193,7 @@ class JpaContactControllerTest {
 
     @BeforeEach
     public void setUp() {
-      when(contactService.addContact(Mockito.any(User.class), Mockito.any(ContactDto.class)))
+      when(contactService.addContact(any(User.class), any(ContactDto.class)))
           .thenReturn(savedContact);
     }
 

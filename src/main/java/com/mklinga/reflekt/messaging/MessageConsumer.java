@@ -61,7 +61,6 @@ public class MessageConsumer {
         messageService.deleteMessages(queueName, messages);
         logger.info("Message consumer finished, processed {} messages.", messages.size());
 
-        /* If we receive maximum amount of messages from the queue, we re-consume immediately */
       } catch (InterruptedException e) {
         logger.error("Message consumer caught an exception with the queue {}.", queueName);
         logger.error(e.getMessage());
@@ -69,6 +68,7 @@ public class MessageConsumer {
         break;
       }
 
+      /* If we receive maximum amount of messages from the queue, we re-consume immediately */
       consumerDone = (messages.size() != maxMessages);
       logger.debug("Consumer done? {} ({})", Boolean.toString(consumerDone), messages.size());
     }
@@ -79,5 +79,4 @@ public class MessageConsumer {
   public void consumeMessages(String queueName, MessageHandler handler) {
     this.consumeMessages(queueName, handler, defaultMaxMessages);
   }
-
 }

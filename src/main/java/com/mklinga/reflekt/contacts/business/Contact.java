@@ -19,8 +19,6 @@ public abstract class Contact {
 
   public abstract FullName getFullName();
 
-  protected abstract void setFullName(FullName fullName);
-
   public abstract UUID getId();
 
   public abstract List<ContactRelation> getRelations();
@@ -38,6 +36,7 @@ public abstract class Contact {
   }
 
   public void addRelation(ContactRelation relation) {
+    /* TODO: VALIDATE - relation can only be added if the subject is this Contact */
     List<ContactRelation> relations = new ArrayList<>(this.getRelations());
     relations.add(relation);
     this.setRelations(relations);

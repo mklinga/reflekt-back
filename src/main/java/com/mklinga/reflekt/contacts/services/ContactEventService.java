@@ -4,6 +4,7 @@ import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.dtos.ContactEventDto;
 import com.mklinga.reflekt.contacts.repositories.ContactEventRepository;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,20 @@ public class ContactEventService {
   private final ModelMapper modelMapper;
 
   @Autowired
-  public ContactEventService(
-      ContactEventRepository contactEventRepository, ModelMapper modelMapper) {
+  public ContactEventService(ContactEventRepository contactEventRepository,
+                             ModelMapper modelMapper) {
     this.contactEventRepository = contactEventRepository;
     this.modelMapper = modelMapper;
   }
 
   public List<ContactEventDto> findAll(User user) {
-    return contactEventRepository.findAllByOwner(user.getId())
-        .stream().map(contactEvent -> modelMapper.map(contactEvent, ContactEventDto.class))
+    return contactEventRepository.findAllByOwner(user.getId()).stream()
+        .map(contactEvent -> modelMapper.map(contactEvent, ContactEventDto.class))
         .collect(Collectors.toList());
   }
 
+  public List<ContactEventDto> findForContactId(User user, UUID contactID) {
+    return contactEventRepository.findAllByOwnerAndContactId(user.getId(), contactID).stream()
+        .map(event -> modelMapper.map(event, ContactEventDto.class)).collect(Collectors.toList());
+  }
 }

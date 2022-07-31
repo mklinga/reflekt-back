@@ -3,6 +3,7 @@ package com.mklinga.reflekt.contacts.services;
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.business.Contact;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
+import com.mklinga.reflekt.contacts.dtos.ContactEventDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
@@ -11,6 +12,8 @@ import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
 import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,13 @@ public class ContactService {
   public List<ContactDto> getAllContacts(User user) {
     List<JpaContact> jpaContacts = this.contactRepository.findAllByOwner(user);
     return Contact.toDto(jpaContacts);
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<ContactDto> getContactById(UUID id, User user) {
+    return Optional
+        .ofNullable(this.contactRepository.findByIdAndOwner(id, user))
+        .map(contact -> contact.toDto());
   }
 
   @Transactional
