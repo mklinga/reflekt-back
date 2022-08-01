@@ -2,12 +2,11 @@ package com.mklinga.reflekt.contacts.dtos;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.mklinga.reflekt.contacts.business.Contact;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
-import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
+import com.mklinga.reflekt.contacts.utils.DraftItem;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,11 +39,11 @@ public class ContactRelationDto {
   }
 
   public ContactRelationDto replaceDraftIds(UUID id) {
-    if (subject.equals(Contact.draftId)) {
+    if (subject.equals(DraftItem.id)) {
       subject = id;
     }
 
-    if (object.equals(Contact.draftId)) {
+    if (object.equals(DraftItem.id)) {
       object = id;
     }
 

@@ -3,13 +3,13 @@ package com.mklinga.reflekt.contacts.services;
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.business.Contact;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
-import com.mklinga.reflekt.contacts.dtos.ContactEventDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
+import com.mklinga.reflekt.contacts.utils.DraftItem;
 import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public class ContactService {
 
   @Transactional
   public ContactDto addContact(User user, ContactDto newContactDto) throws ContactExistsException {
-    if (!newContactDto.getId().equals(Contact.draftId)) {
+    if (!newContactDto.getId().equals(DraftItem.id)) {
       throw new ContactExistsException("Cannot add a contact with existing ID");
     }
 

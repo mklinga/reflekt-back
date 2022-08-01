@@ -3,12 +3,12 @@ package com.mklinga.reflekt.contacts.dtos;
 import static com.mklinga.reflekt.common.TestAuthentication.testUser;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.mklinga.reflekt.contacts.business.Contact;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
+import com.mklinga.reflekt.contacts.utils.DraftItem;
 import com.mklinga.reflekt.contacts.utils.InMemoryContactIdResolver;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ class ContactRelationDtoTest {
   @Test
   void replaceDraftIdsReplacesSubjectDraftIdCorrectly() {
     ContactRelationDto contactRelationDto = createTestDto();
-    contactRelationDto.setSubject(Contact.draftId);
+    contactRelationDto.setSubject(DraftItem.id);
 
-    assertEquals(Contact.draftId, contactRelationDto.getSubject());
+    assertEquals(DraftItem.id, contactRelationDto.getSubject());
     contactRelationDto.replaceDraftIds(testSubject);
     assertEquals(testSubject, contactRelationDto.getSubject());
   }
@@ -42,9 +42,9 @@ class ContactRelationDtoTest {
   @Test
   void replaceDraftIdsReplacesObjectDraftIdCorrectly() {
     ContactRelationDto contactRelationDto = createTestDto();
-    contactRelationDto.setObject(Contact.draftId);
+    contactRelationDto.setObject(DraftItem.id);
 
-    assertEquals(Contact.draftId, contactRelationDto.getObject());
+    assertEquals(DraftItem.id, contactRelationDto.getObject());
     contactRelationDto.replaceDraftIds(testObject);
     assertEquals(testObject, contactRelationDto.getObject());
   }
@@ -53,14 +53,14 @@ class ContactRelationDtoTest {
   void testReplaceDraftIdsReplacesAllDraftIdsCorrectly() {
     UUID newId = UUID.randomUUID();
     ContactRelationDto contactRelationDto1 = createTestDto();
-    contactRelationDto1.setSubject(Contact.draftId);
+    contactRelationDto1.setSubject(DraftItem.id);
 
     ContactRelationDto contactRelationDto2 = createTestDto();
-    contactRelationDto2.setObject(Contact.draftId);
+    contactRelationDto2.setObject(DraftItem.id);
 
     ContactRelationDto contactRelationDto3 = createTestDto();
-    contactRelationDto3.setSubject(Contact.draftId);
-    contactRelationDto3.setObject(Contact.draftId);
+    contactRelationDto3.setSubject(DraftItem.id);
+    contactRelationDto3.setObject(DraftItem.id);
 
     List<ContactRelationDto> draftRelations = List.of(
         contactRelationDto1, contactRelationDto2, contactRelationDto3);

@@ -65,13 +65,19 @@ public class JpaContact extends Contact {
     return this.id;
   }
 
+  @Override
   public FullName getFullName() {
     return new FullName(this.firstName, this.lastName);
   }
 
-  protected void setFullName(FullName fullName) {
+  private void setFullName(FullName fullName) {
     this.firstName = fullName.getFirstName();
     this.lastName = fullName.getLastName();
+  }
+
+  @Override
+  public User getOwner() {
+    return this.owner;
   }
 
   @Override

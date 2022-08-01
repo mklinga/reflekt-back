@@ -3,7 +3,6 @@ package com.mklinga.reflekt.contacts.model;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,10 +12,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "contact_events")
 public class ContactEvent {
   @Id
@@ -37,7 +38,7 @@ public class ContactEvent {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
-  @ManyToMany(cascade = CascadeType.ALL)
+  @ManyToMany
   @JoinTable(
       name = "contact_event_participants",
       joinColumns = @JoinColumn(name = "contact_event_id"),

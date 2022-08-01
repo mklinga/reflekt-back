@@ -2,6 +2,7 @@ package com.mklinga.reflekt.contacts.business;
 
 import static com.mklinga.reflekt.common.configuration.ModelMapperConfiguration.getModelMapper;
 
+import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactRelationsExistException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
@@ -13,13 +14,14 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 
 public abstract class Contact {
-  public static final UUID draftId = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
   protected final ModelMapper modelMapper = getModelMapper();
 
   public abstract FullName getFullName();
 
   public abstract UUID getId();
+
+  public abstract User getOwner();
 
   public abstract List<ContactRelation> getRelations();
 

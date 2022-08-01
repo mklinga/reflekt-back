@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.contacts.business.Contact;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
@@ -15,6 +14,7 @@ import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
+import com.mklinga.reflekt.contacts.utils.DraftItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -98,10 +98,10 @@ class ContactServiceTest {
     @Test
     void itSavesNewContactAndHandlesDraftIdReplacementsAndReturnsIt() {
       ContactRelationDto contactRelationDto = createContactRelationDto();
-      contactRelationDto.setSubject(Contact.draftId);
+      contactRelationDto.setSubject(DraftItem.id);
 
       ContactDto newContactDto = new ContactDto();
-      newContactDto.setId(Contact.draftId);
+      newContactDto.setId(DraftItem.id);
       newContactDto.setFirstName("New FirstName");
       newContactDto.setLastName("New LastName");
       newContactDto.setRelations(List.of(contactRelationDto));
@@ -119,13 +119,13 @@ class ContactServiceTest {
 
       /* Assertion */
       assertNotNull(result);
-      assertNotEquals(Contact.draftId, result.getId());
+      assertNotEquals(DraftItem.id, result.getId());
       assertEquals("New FirstName", result.getFirstName());
       assertEquals("New LastName", result.getLastName());
 
       List<ContactRelationDto> savedRelations = result.getRelations();
       assertEquals(1, savedRelations.size());
-      assertNotEquals(Contact.draftId, savedRelations.get(0).getSubject());
+      assertNotEquals(DraftItem.id, savedRelations.get(0).getSubject());
       assertEquals(contactRelationDto.getObject(), savedRelations.get(0).getObject());
       assertEquals(contactRelationDto.getPredicate(), savedRelations.get(0).getPredicate());
     }
