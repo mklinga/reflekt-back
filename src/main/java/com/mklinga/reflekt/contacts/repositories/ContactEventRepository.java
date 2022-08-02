@@ -22,7 +22,7 @@ public interface ContactEventRepository extends JpaRepository<ContactEvent, UUID
   @Query(
       nativeQuery = true,
       value = "SELECT DISTINCT(e.*) FROM contact_events e"
-          + "  INNER JOIN contact_event_participants p ON p.contact_id = :contact_id"
+          + "  INNER JOIN contact_event_participants p ON p.contact_event_id = e.id"
           + "  INNER JOIN contacts c ON c.id = p.contact_id"
           + "  WHERE c.owner = :owner_id AND c.id = :contact_id"
           + "  ORDER BY e.event_date DESC")
