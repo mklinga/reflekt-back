@@ -4,7 +4,6 @@ import static com.mklinga.reflekt.common.TestAuthentication.testUser;
 import static com.mklinga.reflekt.common.configuration.ModelMapperConfiguration.getModelMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -15,6 +14,7 @@ import com.mklinga.reflekt.contacts.dtos.ContactEventDto;
 import com.mklinga.reflekt.contacts.model.ContactEvent;
 import com.mklinga.reflekt.contacts.model.ContactEventType;
 import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactEventRepository;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -65,8 +64,21 @@ public class ContactEventServiceTest {
     private final UUID testContact2 = UUID.randomUUID();
 
     private List<JpaContact> getTestContacts() {
-      JpaContact contact1 = new JpaContact(testContact1, new FullName("First", "Contact"), testUser(), new ArrayList<>());
-      JpaContact contact2 = new JpaContact(testContact2, new FullName("Another", "Person"), testUser(), new ArrayList<>());
+      JpaContact contact1 = new JpaContact(
+          testContact1,
+          new FullName("First", "Contact"),
+          testUser(),
+          new ArrayList<>(),
+          new JobInformation("Doctor", "Fancy Hospital"),
+          "First description"
+      );
+      JpaContact contact2 = new JpaContact(
+          testContact2,
+          new FullName("Another", "Person"),
+          testUser(),
+          new ArrayList<>(),
+          new JobInformation("Priest", "Satanic Convention"),
+          "Second description");
       return List.of(contact1, contact2);
     }
 

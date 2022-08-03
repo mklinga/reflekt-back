@@ -7,6 +7,7 @@ import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactRelationsExistException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,10 @@ public abstract class Contact {
   protected final ModelMapper modelMapper = getModelMapper();
 
   public abstract FullName getFullName();
+
+  public abstract JobInformation getJobInformation();
+
+  public abstract String getDescription();
 
   public abstract UUID getId();
 

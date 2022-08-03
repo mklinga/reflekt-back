@@ -7,6 +7,7 @@ import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
 import com.mklinga.reflekt.contacts.utils.DraftItem;
@@ -49,8 +50,7 @@ public class ContactService {
       throw new ContactExistsException("Cannot add a contact with existing ID");
     }
 
-    JpaContact draftContact = JpaContact.createDraftContact(
-        new FullName(newContactDto.getFirstName(), newContactDto.getLastName()), user);
+    JpaContact draftContact = JpaContact.createDraftContact(newContactDto, user);
 
     /* Next, we replace all the draft ids in the relations */
     List<ContactRelationDto> relations = ContactRelationDto

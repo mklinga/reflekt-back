@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.utils.ContactIdResolver;
@@ -81,9 +82,21 @@ class ContactRelationDtoTest {
   @Test
   void resolveListResolvesContactsForListOfContactRelationsCorrectlyForOneItem() {
     JpaContact jpaSubject = new JpaContact(
-        testSubject, new FullName("T", "Subject"), testUser(), new ArrayList<>());
+        testSubject,
+        new FullName("T", "Subject"),
+        testUser(),
+        new ArrayList<>(),
+        new JobInformation("Title1", "Workplace1"),
+        "Description 1"
+    );
     JpaContact jpaObject = new JpaContact(
-        testObject, new FullName("Mr", "Object"), testUser(), new ArrayList<>());
+        testObject,
+        new FullName("Mr", "Object"),
+        testUser(),
+        new ArrayList<>(),
+        new JobInformation("Title2", "Workplace2"),
+        "Description2"
+    );
 
     ContactIdResolver contactIdResolver =
         new InMemoryContactIdResolver(List.of(jpaSubject, jpaObject));

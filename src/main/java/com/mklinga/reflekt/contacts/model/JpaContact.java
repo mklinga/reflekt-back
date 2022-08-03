@@ -2,6 +2,7 @@ package com.mklinga.reflekt.contacts.model;
 
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.business.Contact;
+import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,15 @@ public class JpaContact extends Contact {
   @Column(name = "last_name")
   private String lastName;
 
+  @Column(name = "job_title")
+  private String jobTitle;
+
+  @Column(name = "workplace")
+  private String workplace;
+
+  @Column(name = "description")
+  private String description;
+
   @ManyToOne
   @JoinColumn(name = "owner", nullable = false)
   private User owner;
@@ -48,16 +58,26 @@ public class JpaContact extends Contact {
     super();
   }
 
-  public JpaContact(UUID id, FullName fullName, User owner, List<ContactRelation> relations) {
+  public JpaContact(UUID id, FullName fullName, User owner, List<ContactRelation> relations,
+                    JobInformation jobInformation, String description) {
     super();
     this.id = id;
     this.setFullName(fullName);
     this.owner = owner;
     this.relations = relations;
+    this.setJobInformation(jobInformation);
+    this.description = description;
   }
 
-  public static JpaContact createDraftContact(FullName fullName, User owner) {
-    return new JpaContact(UUID.randomUUID(), fullName, owner, new ArrayList<>());
+  public static JpaContact createDraftContact(ContactDto contactDto, User owner) {
+    return new JpaContact(
+        UUID.randomUUID(),
+        contactDto.getFullName(),
+        owner,
+        new ArrayList<>(),
+        contactDto.getJobInformation(),
+        contactDto.getDescription()
+    );
   }
 
   @Override
@@ -73,6 +93,21 @@ public class JpaContact extends Contact {
   private void setFullName(FullName fullName) {
     this.firstName = fullName.getFirstName();
     this.lastName = fullName.getLastName();
+  }
+
+  @Override
+  public String getDescription() {
+    return this.description;
+  }
+
+  @Override
+  public JobInformation getJobInformation() {
+    return new JobInformation(this.jobTitle, this.workplace);
+  }
+
+  private void setJobInformation(JobInformation jobInformation) {
+    this.jobTitle = jobInformation.getJobTitle();
+    this.workplace = jobInformation.getWorkplace();
   }
 
   @Override

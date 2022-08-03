@@ -11,6 +11,7 @@ import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
@@ -45,8 +46,20 @@ class ContactServiceTest {
   }
 
   private List<JpaContact> getTestContacts() {
-    JpaContact contact1 = new JpaContact(testId1, new FullName("Mr.", "1"), testUser(), new ArrayList<>());
-    JpaContact contact2 = new JpaContact(testId2, new FullName("Dr.", "2"), testUser(), new ArrayList<>());
+    JpaContact contact1 = new JpaContact(
+        testId1,
+        new FullName("Mr.", "1"),
+        testUser(),
+        new ArrayList<>(),
+        new JobInformation("Title 1", "Workplace 1"),
+        "Description 1");
+    JpaContact contact2 = new JpaContact(
+        testId2,
+        new FullName("Dr.", "2"),
+        testUser(),
+        new ArrayList<>(),
+        new JobInformation("Title 2", "Workplace 2"),
+        "Description 2");
     return List.of(contact1, contact2);
   }
 
@@ -60,11 +73,17 @@ class ContactServiceTest {
     ContactDto first = result.get(0);
     assertEquals("Mr.", first.getFirstName());
     assertEquals("1", first.getLastName());
+    assertEquals("Title 1", first.getJobTitle());
+    assertEquals("Workplace 1", first.getWorkplace());
+    assertEquals("Description 1", first.getDescription());
     assertEquals(testId1, first.getId());
 
     ContactDto second = result.get(1);
     assertEquals("Dr.", second.getFirstName());
     assertEquals("2", second.getLastName());
+    assertEquals("Title 2", second.getJobTitle());
+    assertEquals("Workplace 2", second.getWorkplace());
+    assertEquals("Description 2", second.getDescription());
     assertEquals(testId2, second.getId());
   }
 
@@ -104,6 +123,9 @@ class ContactServiceTest {
       newContactDto.setId(DraftItem.id);
       newContactDto.setFirstName("New FirstName");
       newContactDto.setLastName("New LastName");
+      newContactDto.setJobTitle("Jobtitle");
+      newContactDto.setWorkplace("Workplace");
+      newContactDto.setDescription("Description");
       newContactDto.setRelations(List.of(contactRelationDto));
 
       /* Mocks */
@@ -122,6 +144,9 @@ class ContactServiceTest {
       assertNotEquals(DraftItem.id, result.getId());
       assertEquals("New FirstName", result.getFirstName());
       assertEquals("New LastName", result.getLastName());
+      assertEquals("Jobtitle", result.getJobTitle());
+      assertEquals("Workplace", result.getWorkplace());
+      assertEquals("Description", result.getDescription());
 
       List<ContactRelationDto> savedRelations = result.getRelations();
       assertEquals(1, savedRelations.size());

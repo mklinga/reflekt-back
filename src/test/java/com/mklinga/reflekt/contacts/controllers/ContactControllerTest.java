@@ -1,6 +1,6 @@
 package com.mklinga.reflekt.contacts.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -10,12 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mklinga.reflekt.authentication.model.User;
-import com.mklinga.reflekt.contacts.model.ContactRelation;
-import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.common.ApplicationTestConfiguration;
 import com.mklinga.reflekt.common.TestAuthentication;
 import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
+import com.mklinga.reflekt.contacts.model.ContactRelation;
+import com.mklinga.reflekt.contacts.model.FullName;
+import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.model.RelationPredicate;
 import com.mklinga.reflekt.contacts.services.ContactService;
@@ -29,7 +30,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -54,15 +54,18 @@ class ContactControllerTest {
   private ModelMapper modelMapper;
 
   private List<JpaContact> getTestContacts() {
-
     JpaContact first = new JpaContact(UUID.fromString("e278a279-d5d0-4497-8879-b6dbf6a68431"),
-        new FullName("First", "Contact1"), null, new ArrayList<>());
+        new FullName("First", "Contact1"), null, new ArrayList<>(),
+        new JobInformation("Doctor", "Fancy Hospital"),
+        "First description"
+    );
 
     JpaContact second = new JpaContact(
         UUID.fromString("5adb4e88-26b3-48d2-9505-dad505a8fffe"),
         new FullName("Second", "Contact2"),
         null,
-        new ArrayList<>());
+        new ArrayList<>(), new JobInformation("Priest", "Satanic Convention"),
+        "Second description");
 
     ContactRelation relation1 = new ContactRelation(
         1, first, RelationPredicate.IS_FATHER_OF, second);
@@ -90,38 +93,44 @@ class ContactControllerTest {
         .thenReturn(contactList);
 
     String expectedBody = """
-      [
-        {
-          "id":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-          "firstName":"First",
-          "lastName":"Contact1",
-          "relations":[
-            {
-              "id":1,
-              "subject":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-              "object":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
-              "predicate":"isFatherOf"
-            }
-          ]
-        },
-        {
-          "id":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
-          "firstName":"Second",
-          "lastName":"Contact2",
-          "relations":[
-            {
-              "id":2,
-              "subject":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
-              "object":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-              "predicate":"isChildOf"
-            }
-          ]
-        }
-      ]
-        """;
+        [
+          {
+            "id":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+            "firstName":"First",
+            "lastName":"Contact1",
+            "jobTitle": "Doctor",
+            "workplace": "Fancy Hospital",
+            "description": "First description",
+            "relations":[
+              {
+                "id":1,
+                "subject":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+                "object":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
+                "predicate":"isFatherOf"
+              }
+            ]
+          },
+          {
+            "id":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
+            "firstName":"Second",
+            "lastName":"Contact2",
+            "jobTitle": "Priest",
+            "workplace": "Satanic Convention",
+            "description": "Second description",
+            "relations":[
+              {
+                "id":2,
+                "subject":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
+                "object":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+                "predicate":"isChildOf"
+              }
+            ]
+          }
+        ]
+          """;
 
     mockMvc.perform(MockMvcRequestBuilders.get("/contacts"))
-        .andExpectAll(status().isOk(), content().json(expectedBody));
+        .andExpectAll(status().isOk(), content().json(expectedBody, true));
   }
 
   @Nested
@@ -137,23 +146,26 @@ class ContactControllerTest {
           any(User.class))).thenReturn(Optional.of(contact));
 
       String expectedBody = """
-        {
-          "id":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-          "firstName":"First",
-          "lastName":"Contact1",
-          "relations":[
-            {
-              "id":1,
-              "subject":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-              "object":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
-              "predicate":"isFatherOf"
-            }
-          ]
-        }
-        """;
+          {
+            "id":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+            "firstName":"First",
+            "lastName":"Contact1",
+            "jobTitle": "Doctor",
+            "workplace": "Fancy Hospital",
+            "description": "First description",
+            "relations":[
+              {
+                "id":1,
+                "subject":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+                "object":"5adb4e88-26b3-48d2-9505-dad505a8fffe",
+                "predicate":"isFatherOf"
+              }
+            ]
+          }
+          """;
 
       mockMvc.perform(MockMvcRequestBuilders.get("/contacts/e278a279-d5d0-4497-8879-b6dbf6a68431"))
-          .andExpectAll(status().isOk(), content().json(expectedBody));
+          .andExpectAll(status().isOk(), content().json(expectedBody, true));
     }
 
     @Test
@@ -176,20 +188,23 @@ class ContactControllerTest {
     final ContactDto savedContact = getSavedContact();
 
     final String postBody = """
-          {
-            "id":"00000000-0000-0000-0000-000000000000",
-            "firstName":"New",
-            "lastName":"Contact",
-            "relations":
-            [
-              {
-                "subject":"00000000-0000-0000-0000-000000000000",
-                "object":"e278a279-d5d0-4497-8879-b6dbf6a68431",
-                "predicate":"isFriendOf"
-              }
-            ]
-          }
-          """;
+        {
+          "id":"00000000-0000-0000-0000-000000000000",
+          "firstName":"New",
+          "lastName":"Contact",
+          "description": "New\\nDescription",
+          "workplace": "Ashram",
+          "jobTitle": "Golden Leader",
+          "relations":
+          [
+            {
+              "subject":"00000000-0000-0000-0000-000000000000",
+              "object":"e278a279-d5d0-4497-8879-b6dbf6a68431",
+              "predicate":"isFriendOf"
+            }
+          ]
+        }
+        """;
 
     @BeforeEach
     public void setUp() {
@@ -204,7 +219,9 @@ class ContactControllerTest {
           UUID.fromString("cd1ac07f-4959-441d-9c26-8f7b8533e073"),
           new FullName("Saved", "Contact"),
           null,
-          new ArrayList<>()
+          new ArrayList<>(),
+          new JobInformation("Golden Leader", "Ashram"),
+          "New\\nDescription"
       );
 
       ContactRelation relation = new ContactRelation(
@@ -232,6 +249,9 @@ class ContactControllerTest {
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"), requestContact.getId());
       assertEquals("New", requestContact.getFirstName());
       assertEquals("Contact", requestContact.getLastName());
+      assertEquals("Golden Leader", requestContact.getJobTitle());
+      assertEquals("Ashram", requestContact.getWorkplace());
+      assertEquals("New\nDescription", requestContact.getDescription());
       List<ContactRelationDto> relationDtoList = requestContact.getRelations();
       assertEquals(1, relationDtoList.size());
       assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000000"),
@@ -249,6 +269,9 @@ class ContactControllerTest {
             "id":"cd1ac07f-4959-441d-9c26-8f7b8533e073",
             "firstName":"Saved",
             "lastName":"Contact",
+            "description": "New\\\\nDescription",
+            "workplace": "Ashram",
+            "jobTitle": "Golden Leader",
             "relations":[
               {
                 "id":3,
