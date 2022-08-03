@@ -2,7 +2,8 @@ package com.mklinga.reflekt.contacts.model;
 
 public enum ContactEventType {
   PHONE("PHONE"),
-  IN_PERSON("IN_PERSON");
+  IN_PERSON("IN_PERSON"),
+  VIDEO_CALL("VIDEO_CALL");
 
   private final String type;
 
