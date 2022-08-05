@@ -1,6 +1,7 @@
 package com.mklinga.reflekt.contacts.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mklinga.reflekt.contacts.interfaces.DraftableContact;
 import com.mklinga.reflekt.contacts.model.FullName;
 import com.mklinga.reflekt.contacts.model.JobInformation;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ContactDto {
+public class ContactDto implements DraftableContact {
   private UUID id;
   private String firstName;
   private String lastName;

@@ -2,7 +2,7 @@ package com.mklinga.reflekt.contacts.model;
 
 import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.contacts.business.Contact;
-import com.mklinga.reflekt.contacts.dtos.ContactDto;
+import com.mklinga.reflekt.contacts.interfaces.DraftableContact;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -69,14 +69,14 @@ public class JpaContact extends Contact {
     this.description = description;
   }
 
-  public static JpaContact createDraftContact(ContactDto contactDto, User owner) {
+  public static JpaContact createDraftContact(DraftableContact draftableContact, User owner) {
     return new JpaContact(
         UUID.randomUUID(),
-        contactDto.getFullName(),
+        draftableContact.getFullName(),
         owner,
         new ArrayList<>(),
-        contactDto.getJobInformation(),
-        contactDto.getDescription()
+        draftableContact.getJobInformation(),
+        draftableContact.getDescription()
     );
   }
 
