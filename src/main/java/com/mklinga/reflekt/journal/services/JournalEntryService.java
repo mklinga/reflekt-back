@@ -68,10 +68,16 @@ public class JournalEntryService {
    * @return List of all items, if search is null, or a filtered list if search is enabled
    */
   @Transactional(readOnly = true)
-  public List<JournalEntryDto> getAllEntries(UserPrincipal user, LimitedResult limitedResult) {
+  public List<JournalEntryDto> getAllEntries(User user, LimitedResult limitedResult) {
     Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-    Pageable pageable = PageRequest.of(limitedResult.getPage(), limitedResult.getLimit(), sort);
-    List<JournalEntry> entries = journalEntryRepository.findAllByOwner(user.getUser(), pageable);
+
+    List<JournalEntry> entries;
+    if (limitedResult.getLimit() == null) {
+      entries = journalEntryRepository.findAllByOwner(user, sort);
+    } else {
+      Pageable pageable = PageRequest.of(limitedResult.getPage(), limitedResult.getLimit(), sort);
+      entries = journalEntryRepository.findAllByOwner(user, pageable);
+    }
 
     return entries.stream()
         .map(entry -> modelMapper.map(entry, JournalEntryDto.class))

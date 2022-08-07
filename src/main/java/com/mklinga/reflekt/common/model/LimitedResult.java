@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 public class LimitedResult {
   private Integer page = 0;
-  private Integer limit = 10;
+  private Integer limit;
   private String query;
 }

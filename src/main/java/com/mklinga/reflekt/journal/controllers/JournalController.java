@@ -48,7 +48,7 @@ public class JournalController {
   @GetMapping("")
   public ResponseEntity<List<JournalEntryDto>> getJournalEntries(
       @AuthenticationPrincipal UserPrincipal user, LimitedResult limitedResult) {
-    List<JournalEntryDto> all = journalEntryService.getAllEntries(user, limitedResult);
+    List<JournalEntryDto> all = journalEntryService.getAllEntries(user.getUser(), limitedResult);
 
     return ResponseEntity.ok(all);
   }

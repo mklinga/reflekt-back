@@ -15,6 +15,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface JournalEntryRepository extends CrudRepository<JournalEntry, UUID> {
   List<JournalEntry> findAllByOwner(User user, Pageable pageable);
 
+  List<JournalEntry> findAllByOwner(User user, Sort sort);
+
   List<JournalEntry> findAllByOwnerAndEntryContainingIgnoreCase(
       User user, String search, Sort sort
   );
