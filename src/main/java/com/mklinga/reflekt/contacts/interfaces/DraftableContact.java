@@ -5,6 +5,8 @@ import com.mklinga.reflekt.contacts.model.JobInformation;
 
 public interface DraftableContact {
   FullName getFullName();
+
   JobInformation getJobInformation();
+
   String getDescription();
 }

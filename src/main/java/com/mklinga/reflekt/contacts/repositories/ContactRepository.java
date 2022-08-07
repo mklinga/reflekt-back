@@ -14,7 +14,9 @@ public interface ContactRepository extends JpaRepository<JpaContact, UUID> {
   @Query(
       nativeQuery = true,
       value = "SELECT * FROM contacts WHERE (id IN :ids) AND (owner = :owner_id)")
-  List<JpaContact> findByIdsAndOwner(@Param("ids") List<UUID> ids, @Param("owner_id") Integer userId);
+  List<JpaContact> findByIdsAndOwner(
+      @Param("ids") List<UUID> ids,
+      @Param("owner_id") Integer userId);
 
   JpaContact findByIdAndOwner(UUID id, User owner);
 }

@@ -37,8 +37,8 @@ public class ContactEventService {
         .collect(Collectors.toList());
   }
 
-  public List<ContactEventDto> findForContactId(User user, UUID contactID) {
-    return contactEventRepository.findAllByOwnerAndContactId(user.getId(), contactID).stream()
+  public List<ContactEventDto> findForContactId(User user, UUID contactId) {
+    return contactEventRepository.findAllByOwnerAndContactId(user.getId(), contactId).stream()
         .map(event -> modelMapper.map(event, ContactEventDto.class)).collect(Collectors.toList());
   }
 

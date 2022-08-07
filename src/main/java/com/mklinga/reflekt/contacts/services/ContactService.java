@@ -6,8 +6,6 @@ import com.mklinga.reflekt.contacts.dtos.ContactDto;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.exceptions.ContactExistsException;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
-import com.mklinga.reflekt.contacts.model.FullName;
-import com.mklinga.reflekt.contacts.model.JobInformation;
 import com.mklinga.reflekt.contacts.model.JpaContact;
 import com.mklinga.reflekt.contacts.repositories.ContactRepository;
 import com.mklinga.reflekt.contacts.utils.DraftItem;
@@ -52,11 +50,9 @@ public class ContactService {
 
     JpaContact draftContact = JpaContact.createDraftContact(newContactDto, user);
 
-    /* Next, we replace all the draft ids in the relations */
     List<ContactRelationDto> relations = ContactRelationDto
         .replaceDraftIds(newContactDto.getRelations(), draftContact.getId());
 
-    /* Then, map the ContactRelationDto into real ContactRelations */
     InMemoryContactIdResolver inMemoryContactIdResolver =
         new InMemoryContactIdResolver(contactRepository.findAllByOwner(user));
     inMemoryContactIdResolver.addContact(draftContact);
@@ -64,7 +60,6 @@ public class ContactService {
     List<ContactRelation> jpaContactRelations =
         ContactRelationDto.resolveList(relations, inMemoryContactIdResolver);
 
-    /* Insert them into the draft Contact item */
     draftContact.insertInitialRelations(jpaContactRelations);
 
     JpaContact savedJpaContactWithRelations = contactRepository.save(draftContact);
