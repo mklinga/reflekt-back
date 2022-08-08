@@ -3,8 +3,11 @@ package com.mklinga.reflekt.common.configuration;
 import com.mklinga.reflekt.contacts.dtos.ContactRelationDto;
 import com.mklinga.reflekt.contacts.model.ContactRelation;
 import com.mklinga.reflekt.journal.dtos.ImageDataDto;
+import com.mklinga.reflekt.journal.interfaces.RawEntryTagsResult;
 import com.mklinga.reflekt.journal.model.Image;
+import com.mklinga.reflekt.journal.model.Tag;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 
 /**
  * We use a singleton ModelMapper throughout the application and we can define the specific rules
@@ -18,7 +21,7 @@ public class ModelMapperConfiguration {
    */
   public static ModelMapper getModelMapper() {
     ModelMapper modelMapper = new ModelMapper();
-
+    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     /* Custom field mappings */
 
     /*
@@ -41,6 +44,14 @@ public class ModelMapperConfiguration {
     modelMapper
         .typeMap(ContactRelation.class, ContactRelationDto.class)
         .addMappings(m -> m.map(src -> src.getSubject().getId(), ContactRelationDto::setSubject));
+
+    /*
+      Mapping rawentry results
+     */
+
+    modelMapper
+        .typeMap(RawEntryTagsResult.class, Tag.class)
+        .addMapping(RawEntryTagsResult::getTagId, Tag::setId);
 
     return modelMapper;
   }

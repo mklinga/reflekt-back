@@ -6,14 +6,26 @@ import com.mklinga.reflekt.common.model.LimitedResult;
 import com.mklinga.reflekt.common.model.NavigationData;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
 import com.mklinga.reflekt.journal.dtos.SearchResultDto;
+import com.mklinga.reflekt.journal.interfaces.RawEntryTagsResult;
+import com.mklinga.reflekt.journal.interfaces.RawImageResult;
+import com.mklinga.reflekt.journal.interfaces.RawJournalEntryResult;
+import com.mklinga.reflekt.journal.model.Image;
 import com.mklinga.reflekt.journal.model.JournalEntry;
+import com.mklinga.reflekt.journal.model.Tag;
+import com.mklinga.reflekt.journal.repositories.ImageRepository;
 import com.mklinga.reflekt.journal.repositories.JournalEntryRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.modelmapper.ModelMapper;
@@ -36,6 +48,7 @@ public class JournalEntryService {
 
   private final JournalEntryRepository journalEntryRepository;
   private final JournalEntryMessageService journalEntryMessageService;
+  private final ImageRepository imageRepository;
   private final ModelMapper modelMapper;
 
   /**
@@ -48,9 +61,11 @@ public class JournalEntryService {
   @Autowired
   public JournalEntryService(JournalEntryRepository journalEntryRepository,
                              JournalEntryMessageService journalEntryMessageService,
+                             ImageRepository imageRepository,
                              ModelMapper modelMapper) {
     this.journalEntryRepository = journalEntryRepository;
     this.journalEntryMessageService = journalEntryMessageService;
+    this.imageRepository = imageRepository;
     this.modelMapper = modelMapper;
   }
 
@@ -73,7 +88,34 @@ public class JournalEntryService {
 
     List<JournalEntry> entries;
     if (limitedResult.getLimit() == null) {
-      entries = journalEntryRepository.findAllByOwner(user, sort);
+      List<RawJournalEntryResult> rawEntries = journalEntryRepository
+          .findAllByOwner(user.getId());
+      List<UUID> entryIds = rawEntries
+          .stream().map(RawJournalEntryResult::getId).collect(Collectors.toList());
+
+      Map<UUID, List<Tag>> allTags = journalEntryRepository
+          .findTagsForEntries(entryIds)
+          .stream()
+          .collect(Collectors.toMap(
+              RawEntryTagsResult::getEntryId,
+              t -> Arrays.asList(modelMapper.map(t, Tag.class)),
+              (a, b) -> Stream.concat(a.stream(), b.stream()).toList()
+          ));
+      Map<UUID, Set<Image>> allImages = imageRepository
+          .findAllByOwner(user.getId())
+          .stream()
+          .collect(Collectors.toMap(
+              RawImageResult::getJournalEntryId,
+              i -> Set.of(modelMapper.map(i, Image.class)),
+              (a, b) -> Stream.concat(a.stream(), b.stream()).collect(Collectors.toSet())
+          ));
+
+      entries = rawEntries.stream().map(rawEntry -> {
+        JournalEntry entry = modelMapper.map(rawEntry, JournalEntry.class);
+        entry.setTags(allTags.getOrDefault(entry.getId(), new ArrayList<>()));
+        entry.setImages(allImages.getOrDefault(entry.getId(), new HashSet<>()));
+        return entry;
+      }).collect(Collectors.toList());
     } else {
       Pageable pageable = PageRequest.of(limitedResult.getPage(), limitedResult.getLimit(), sort);
       entries = journalEntryRepository.findAllByOwner(user, pageable);
