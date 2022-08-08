@@ -22,8 +22,8 @@ public interface JournalEntryRepository extends CrudRepository<JournalEntry, UUI
   List<JournalEntry> findAllByOwner(User user, Pageable pageable);
 
   @Query(nativeQuery = true,
-      value = "   SELECT cast(e.id as varchar), e.entry_date, e.created_at,"
-              + " e.updated_at, e.mood, e.title, e.entry"
+      value = "   SELECT cast(e.id as varchar), e.entry_date AS entryDate,"
+              + " e.created_at AS createdAt, e.updated_at AS updatedAt, e.mood, e.title, e.entry"
               + " FROM entries e WHERE e.owner = :owner"
               + " ORDER BY entry_date DESC")
   List<RawJournalEntryResult> findAllByOwner(@Param("owner") Integer owner);
