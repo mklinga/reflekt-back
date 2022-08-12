@@ -4,6 +4,8 @@ import com.mklinga.reflekt.authentication.model.UserPrincipal;
 import com.mklinga.reflekt.common.model.LimitedResult;
 import com.mklinga.reflekt.common.model.Navigable;
 import com.mklinga.reflekt.common.model.NavigationData;
+import com.mklinga.reflekt.contacts.dtos.ContactEventDto;
+import com.mklinga.reflekt.contacts.services.ContactEventService;
 import com.mklinga.reflekt.journal.dtos.JournalEntryDto;
 import com.mklinga.reflekt.journal.model.JournalEntry;
 import com.mklinga.reflekt.journal.services.JournalEntryService;
@@ -32,11 +34,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalController {
 
   private final JournalEntryService journalEntryService;
+  private final ContactEventService contactEventService;
   private final ModelMapper modelMapper;
 
   @Autowired
-  public JournalController(JournalEntryService journalEntryService, ModelMapper modelMapper) {
+  public JournalController(JournalEntryService journalEntryService,
+                           ContactEventService contactEventService,
+                           ModelMapper modelMapper) {
     this.journalEntryService = journalEntryService;
+    this.contactEventService = contactEventService;
     this.modelMapper = modelMapper;
   }
 
@@ -73,6 +79,15 @@ public class JournalController {
 
       return ResponseEntity.ok(new Navigable<>(journalEntryDto, navigationData));
     }).orElse(ResponseEntity.notFound().build());
+  }
+
+  @GetMapping("/{uuid}/events")
+  public ResponseEntity<List<ContactEventDto>> getContactEventsForEntry(
+      @AuthenticationPrincipal UserPrincipal userPrincipal,
+      @PathVariable UUID uuid) {
+    List<ContactEventDto> events = contactEventService
+        .findForJournalEntry(userPrincipal.getUser(), uuid);
+    return ResponseEntity.ok(events);
   }
 
   /**

@@ -28,4 +28,17 @@ public interface ContactEventRepository extends JpaRepository<ContactEvent, UUID
           + "  ORDER BY e.event_date DESC")
   List<ContactEvent> findAllByOwnerAndContactId(
       @Param("owner_id") Integer userId, @Param("contact_id") UUID contactId);
+
+  @Query(
+      nativeQuery = true,
+      value = "   SELECT DISTINCT(ce.*) FROM contact_events ce"
+              + " INNER JOIN contact_event_participants cep ON cep.contact_event_id = ce.id"
+              + " INNER JOIN contacts c ON c.id = cep.contact_id"
+              + " WHERE c.owner = :owner_id"
+              + " AND ce.event_date = ("
+              + "   SELECT e.entry_date FROM entries e"
+              + "     WHERE e.id = :journal_entry_id AND e.owner = :owner_id"
+              + " )")
+  List<ContactEvent> findAllByJournalEntryId(
+      @Param("owner_id") Integer userId, @Param("journal_entry_id") UUID journalEntryId);
 }

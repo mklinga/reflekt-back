@@ -4,8 +4,6 @@ import com.mklinga.reflekt.authentication.model.User;
 import com.mklinga.reflekt.journal.interfaces.RawEntryTagsResult;
 import com.mklinga.reflekt.journal.interfaces.RawJournalEntryResult;
 import com.mklinga.reflekt.journal.model.JournalEntry;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

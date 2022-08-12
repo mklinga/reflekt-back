@@ -38,8 +38,17 @@ public class ContactEventService {
   }
 
   public List<ContactEventDto> findForContactId(User user, UUID contactId) {
-    return contactEventRepository.findAllByOwnerAndContactId(user.getId(), contactId).stream()
-        .map(event -> modelMapper.map(event, ContactEventDto.class)).collect(Collectors.toList());
+    return contactEventRepository
+        .findAllByOwnerAndContactId(user.getId(), contactId).stream()
+        .map(event -> modelMapper.map(event, ContactEventDto.class))
+        .collect(Collectors.toList());
+  }
+
+  public List<ContactEventDto> findForJournalEntry(User user, UUID journalEntryId) {
+    return contactEventRepository
+        .findAllByJournalEntryId(user.getId(), journalEntryId)
+        .stream().map(event -> modelMapper.map(event, ContactEventDto.class))
+        .collect(Collectors.toList());
   }
 
   public Optional<ContactEventDto> addNewContactEvent(User user, ContactEventDto contactEventDto) {
