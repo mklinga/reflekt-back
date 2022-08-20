@@ -33,6 +33,16 @@ public interface JournalEntryRepository extends CrudRepository<JournalEntry, UUI
               + " WHERE te.entry_id IN :entries")
   List<RawEntryTagsResult> findTagsForEntries(@Param("entries") List<UUID> entries);
 
+  @Query(nativeQuery = true,
+      value = "   SELECT e.* FROM entries e"
+              + " WHERE e.owner = :owner AND e.id IN ("
+              + "   SELECT te.entry_id FROM tag_entries te"
+              + "   INNER JOIN tags t ON t.id = te.tag_id"
+              + "   WHERE t.name = :tag_name)"
+              + " ORDER BY e.entry_date DESC")
+  List<JournalEntry> findEntriesByTagName(@Param("owner") Integer owner,
+                                          @Param("tag_name") String tagName);
+
   List<JournalEntry> findAllByOwnerAndEntryContainingIgnoreCase(
       User user, String search, Sort sort
   );

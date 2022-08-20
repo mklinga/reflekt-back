@@ -230,22 +230,16 @@ public class JournalEntryService {
       return Optional.empty();
     }
 
-    if (query != null) {
-      Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
-      List<JournalEntry> entries = journalEntryRepository
-          .findAllByOwnerAndEntryContainingIgnoreCase(user, query, sort);
-      return Optional.of(
-          entries
-              .stream()
-              .map(entry -> modelMapper.map(entry, SearchResultDto.class))
-              .collect(Collectors.toList()));
-    }
+    Sort sort = Sort.by(Sort.Direction.DESC, "entryDate");
+    List<JournalEntry> entries = (query != null)
+        ?  journalEntryRepository.findAllByOwnerAndEntryContainingIgnoreCase(user, query, sort)
+        : journalEntryRepository.findEntriesByTagName(user.getId(), tag);
 
-    if (tag != null) {
-      /* TODO: tag search */
-    }
-
-    return Optional.empty();
+    return Optional.of(
+        entries
+            .stream()
+            .map(entry -> modelMapper.map(entry, SearchResultDto.class))
+            .collect(Collectors.toList()));
   }
 
   /**
